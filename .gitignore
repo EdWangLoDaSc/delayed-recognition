@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Data pipeline cache (raw API responses - too large for git)
+data_pipeline/cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Node (for future frontend)
+node_modules/
+dist/
+.svelte-kit/
