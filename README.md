@@ -129,10 +129,10 @@ strategy, B-coefficient formula, and output schema.
 
 | Member | Responsibilities |
 |---|---|
-| **Hanyang Wang** — Data & Backend / Viz | OpenAlex pipeline; Beauty Coefficient implementation; both D3 components; demo page |
-| **TBD** — Visualization & D3 | Design review; integrate components into Svelte tree; Tool Design section |
-| **TBD** — Frontend, Integration & Writing | Svelte application shell; reactive filter sidebar; deploy; Introduction |
-| **TBD** — Analysis & Evaluation | Cross-field comparative analysis; usability evaluation; Findings & Discussion |
+| **1** — Data & Backend / Viz | OpenAlex pipeline; Beauty Coefficient implementation; both D3 components; demo page |
+| **2** — Visualization & D3 | Design review; integrate components into Svelte tree; Tool Design section |
+| **3** — Frontend, Integration & Writing | Svelte application shell; reactive filter sidebar; deploy; Introduction |
+| **4** — Analysis & Evaluation | Cross-field comparative analysis; usability evaluation; Findings & Discussion |
 
 ---
 
