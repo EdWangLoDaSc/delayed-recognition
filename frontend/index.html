@@ -364,6 +364,119 @@
       }
       @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
 
+      /* Detail card */
+      .detail {
+        margin-top: 16px;
+        background: var(--paper-soft);
+        border: 0.5px solid var(--rule);
+        border-left: 3px solid var(--warm);
+        padding: 20px 24px 22px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        gap: 28px;
+        position: relative;
+      }
+      .detail.empty {
+        grid-template-columns: 1fr;
+        border-left-color: var(--rule);
+        color: var(--muted);
+        font-style: italic;
+        padding: 28px 24px;
+        text-align: center;
+        font-family: var(--display);
+        font-size: 16px;
+      }
+      .detail .dtitle {
+        font-family: var(--display);
+        font-variation-settings: "opsz" 72, "SOFT" 10;
+        font-style: italic;
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 1.25;
+        margin: 0 0 6px;
+        color: var(--ink);
+      }
+      .detail .dmeta {
+        font-family: var(--body);
+        font-size: 14.5px;
+        color: var(--ink-soft);
+        margin: 0 0 4px;
+      }
+      .detail .dfield {
+        font-family: var(--mono);
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+      .detail .dstats {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+        margin: 10px 0 0;
+        padding-top: 12px;
+        border-top: 0.5px solid var(--rule);
+      }
+      .detail .dstats .stat { display: flex; flex-direction: column; gap: 2px; }
+      .detail .dstats .label {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .detail .dstats .val {
+        font-family: var(--display);
+        font-variation-settings: "opsz" 48;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 20px;
+        color: var(--ink);
+      }
+      .detail .dstats .val.warm { color: var(--warm); }
+      .detail .dstats .val.cool { color: var(--cool); }
+      .detail a.doi {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--warm);
+        text-decoration: none;
+        border-bottom: 1px dotted var(--warm);
+      }
+      .detail a.doi:hover { color: var(--ink); border-bottom-color: var(--ink); }
+      .detail .close {
+        position: absolute;
+        top: 10px; right: 12px;
+        background: transparent; border: 0;
+        font-family: var(--mono);
+        font-size: 14px; color: var(--muted);
+        cursor: pointer;
+        padding: 4px 6px;
+      }
+      .detail .close:hover { color: var(--warm); }
+      .detail .pinned-tag {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 9.5px; letter-spacing: 0.18em;
+        color: var(--warm);
+        margin-right: 8px;
+      }
+      .detail .spark {
+        width: 100%; height: 84px;
+        display: block;
+      }
+      .detail .spark-label {
+        font-family: var(--mono);
+        font-size: 9.5px; letter-spacing: 0.14em;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+
+      @media (max-width: 860px) {
+        .detail { grid-template-columns: 1fr; }
+      }
+
       @media (max-width: 760px) {
         .page { padding: 36px 22px 80px; }
         .masthead { grid-template-columns: 1fr; }
@@ -448,6 +561,9 @@
           Each dot marks the year a paper reached its maximum attention.
         </p>
         <div class="chart-frame"><div id="trajectory" class="loading"></div></div>
+        <aside id="detail" class="detail empty">
+          Hover a spotlight line to preview it here · click to pin · click a histogram bar to narrow the spotlight to that slice of B.
+        </aside>
       </section>
 
       <footer>
@@ -470,6 +586,7 @@
       const spotValEl = document.getElementById("spotlightVal");
       const histEl = document.getElementById("histogram");
       const trajEl = document.getElementById("trajectory");
+      const detailEl = document.getElementById("detail");
 
       statusEl.innerHTML = `<b>—</b>fetching papers.json`;
       const t0 = performance.now();
@@ -485,13 +602,18 @@
         fieldEl.appendChild(opt);
       }
 
-      function applyFilters() {
+      // Cross-view linkage state
+      let bRange = null;        // set by a histogram bar click
+      let brushRange = null;    // [lo, hi] for trajectory → histogram band highlight (in B space)
+      let pinnedPaper = null;
+
+      // Context: field + decade only (NOT filtered by |B| or bRange) so the
+      // median/IQR trajectory remains a faithful reference.
+      function contextSet() {
         const f = fieldEl.value;
-        const minB = Number(minBEl.value) || 0;
         const dec = decadeEl.value ? Number(decadeEl.value) : null;
         return papers.filter((p) => {
           if (f && p.field !== f) return false;
-          if (Math.abs(p.B) < minB) return false;
           if (dec !== null) {
             const hi = dec === 1990 ? 1999 : 2010;
             if (p.publication_year < dec || p.publication_year > hi) return false;
@@ -500,27 +622,151 @@
         });
       }
 
-      function rerenderHist() {
-        const subset = applyFilters();
-        statusEl.innerHTML = `<b>${subset.length.toLocaleString()}</b>works in view · loaded in ${loadSecs}s`;
+      function filteredSet(ctx = null) {
+        const base = ctx || contextSet();
+        const minB = Number(minBEl.value) || 0;
+        return base.filter((p) => {
+          if (Math.abs(p.B) < minB) return false;
+          if (bRange && (p.B < bRange[0] || p.B > bRange[1])) return false;
+          return true;
+        });
+      }
+
+      function rerenderHist(subset) {
         histEl.classList.remove("loading");
-        renderHistogramPanel({ container: histEl, papers: subset });
+        // brushRange from trajectory is expressed in peak-timing (years since pub);
+        // we approximate its projection onto B by not linking directly — instead
+        // we light up the active bRange (from bar click) if present.
+        renderHistogramPanel({
+          container: histEl,
+          papers: subset,
+          highlightedRange: brushRange && brushRange.bSpan ? brushRange.bSpan : null,
+          activeRange: bRange,
+          onBinClick: (x0, x1) => {
+            // Toggle: clicking the same bar clears it
+            if (bRange && bRange[0] === x0 && bRange[1] === x1) bRange = null;
+            else bRange = [x0, x1];
+            rerenderAll();
+          },
+        });
       }
-      function rerenderTraj() {
-        const subset = applyFilters();
+
+      function rerenderTraj(ctx, subset) {
         trajEl.classList.remove("loading");
-        renderTrajectoryChart({ container: trajEl, papers: subset, spotlight: Number(spotEl.value) });
+        renderTrajectoryChart({
+          container: trajEl,
+          papers: subset,
+          contextPapers: ctx,
+          spotlight: Number(spotEl.value),
+          selectedId: pinnedPaper?.id || null,
+          onBrush: (filtered, range) => {
+            if (!range) { brushRange = null; rerenderHist(subset); return; }
+            // Project brushed papers onto B space for histogram highlight
+            if (filtered.length === 0) { brushRange = null; rerenderHist(subset); return; }
+            const bs = filtered.map((p) => p.B);
+            brushRange = { bSpan: [Math.min(...bs), Math.max(...bs)] };
+            rerenderHist(subset);
+          },
+          onHover: (p) => { if (!pinnedPaper) updateDetail(p, false); },
+          onSelect: (p) => {
+            pinnedPaper = p;
+            updateDetail(p, !!p);
+          },
+        });
       }
-      function rerenderAll() { rerenderHist(); rerenderTraj(); }
 
-      [fieldEl, minBEl, decadeEl].forEach((el) => el.addEventListener("change", rerenderAll));
+      function rerenderAll() {
+        const ctx = contextSet();
+        const subset = filteredSet(ctx);
+        let statusBits = [`<b>${subset.length.toLocaleString()}</b>works in spotlight`];
+        if (bRange) statusBits.push(`B ∈ [${bRange[0].toFixed(1)}, ${bRange[1].toFixed(1)}]`);
+        statusBits.push(`ctx n = ${ctx.length.toLocaleString()}`);
+        statusEl.innerHTML = statusBits.join(" · ");
+        rerenderHist(subset);
+        rerenderTraj(ctx, subset);
+      }
 
-      // Spotlight slider: live label update, debounced re-render of trajectory only
+      // Detail card ──────────────────────────────────────────────────────
+      function updateDetail(paper, pinned) {
+        if (!paper) {
+          detailEl.className = "detail empty";
+          detailEl.innerHTML = `Hover a spotlight line to preview it here · click to pin · click a histogram bar to narrow the spotlight to that slice of B.`;
+          return;
+        }
+        detailEl.className = "detail";
+        const doiHref = paper.doi || "";
+        const bClass = paper.B >= 0 ? "warm" : "cool";
+        const peakT = paper.peak_year - paper.publication_year;
+        detailEl.innerHTML = `
+          ${pinned ? '<button class="close" aria-label="close">×</button>' : ""}
+          <div>
+            ${pinned ? '<span class="pinned-tag">PINNED</span>' : ""}
+            <h3 class="dtitle">${escapeHtml(paper.title)}</h3>
+            <p class="dmeta">${escapeHtml(paper.first_author || "?")} · <em>${escapeHtml(paper.venue || "")}</em> · ${paper.publication_year}</p>
+            <p class="dfield">${escapeHtml(paper.field)} — ${escapeHtml(paper.topic || "")}</p>
+            ${doiHref ? `<a class="doi" href="${doiHref}" target="_blank" rel="noopener">${doiHref.replace("https://doi.org/","doi:")}</a>` : ""}
+            <div class="dstats">
+              <div class="stat"><span class="label">B</span><span class="val ${bClass}">${paper.B >= 0 ? "+" : ""}${paper.B.toFixed(2)}</span></div>
+              <div class="stat"><span class="label">Peak</span><span class="val">${paper.peak_year} <span style="font-size:12px;color:var(--muted);font-style:normal;letter-spacing:.08em">(t=${peakT}y)</span></span></div>
+              <div class="stat"><span class="label">Peak cites</span><span class="val">${paper.peak_citations}</span></div>
+              <div class="stat"><span class="label">Sleep</span><span class="val">${paper.sleep_duration}<span style="font-size:13px;color:var(--muted);font-style:normal;"> y</span></span></div>
+              <div class="stat"><span class="label">Total cites</span><span class="val">${paper.cited_by_count.toLocaleString()}</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="spark-label">Citations per year</div>
+            <svg class="spark" id="spark"></svg>
+          </div>
+        `;
+        drawSparkline(paper);
+        if (pinned) {
+          detailEl.querySelector(".close")?.addEventListener("click", () => {
+            pinnedPaper = null;
+            updateDetail(null, false);
+            // also clear selection in chart
+            rerenderTraj(contextSet(), filteredSet());
+          });
+        }
+      }
+
+      function drawSparkline(paper) {
+        const svgEl = detailEl.querySelector("#spark");
+        if (!svgEl) return;
+        const W = svgEl.clientWidth || 220, H = 84, M = { t: 4, r: 6, b: 18, l: 22 };
+        const entries = Object.keys(paper.counts_by_year).map(Number).sort((a,b)=>a-b).map((y)=>({y, c: paper.counts_by_year[y]}));
+        const years = entries.map((e)=>e.y);
+        if (entries.length === 0) return;
+        const xS = d3.scaleLinear().domain(d3.extent(years)).range([M.l, W - M.r]);
+        const yS = d3.scaleLinear().domain([0, d3.max(entries, (d)=>d.c) || 1]).range([H - M.b, M.t]);
+        const svg = d3.select(svgEl);
+        svg.attr("viewBox", `0 0 ${W} ${H}`);
+        const warm = paper.B >= 0 ? "#a33a1f" : "#2d4a6b";
+        const area = d3.area().x((d)=>xS(d.y)).y0(H-M.b).y1((d)=>yS(d.c)).curve(d3.curveMonotoneX);
+        svg.append("path").datum(entries).attr("d", area).attr("fill", warm).attr("fill-opacity", 0.2);
+        svg.append("path").datum(entries).attr("d", d3.line().x((d)=>xS(d.y)).y((d)=>yS(d.c)).curve(d3.curveMonotoneX)).attr("fill","none").attr("stroke", warm).attr("stroke-width",1.3);
+        // peak dot
+        svg.append("circle").attr("cx", xS(paper.peak_year)).attr("cy", yS(paper.peak_citations)).attr("r", 3).attr("fill", warm).attr("stroke","#fbf7ec").attr("stroke-width",1.2);
+        svg.append("g").attr("transform",`translate(0,${H-M.b})`).call(d3.axisBottom(xS).ticks(3).tickFormat(d3.format("d")).tickSize(3)).call((g)=>g.select(".domain").remove()).selectAll("text").style("font-family","'JetBrains Mono', monospace").style("font-size","9px").attr("fill","#7a6f5d");
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      }
+
+      [fieldEl, minBEl, decadeEl].forEach((el) => el.addEventListener("change", () => {
+        // Changing field/decade invalidates any cross-view range filters
+        bRange = null;
+        brushRange = null;
+        pinnedPaper = null;
+        updateDetail(null, false);
+        rerenderAll();
+      }));
+
       let spotTimer;
       spotEl.addEventListener("input", () => {
         spotValEl.textContent = spotEl.value;
         clearTimeout(spotTimer);
-        spotTimer = setTimeout(rerenderTraj, 80);
+        spotTimer = setTimeout(() => rerenderTraj(contextSet(), filteredSet()), 80);
       });
 
       rerenderAll();
