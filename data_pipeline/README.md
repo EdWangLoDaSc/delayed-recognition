@@ -21,6 +21,7 @@ Re-running the script is safe: cached decade bins are skipped.
 | `--email` | `None` | Registers you into OpenAlex's polite pool (higher rate limits). Recommended. |
 | `--per-field` | `17000` | Target paper count per field (split across decade bins). |
 | `--output` | `../data/papers.json` | Output JSON path. |
+| `--max-citation-year` | previous calendar year | Last complete annual citation year to include. |
 
 ## Sampling strategy
 
@@ -39,14 +40,17 @@ $$B = \sum_{t=0}^{t_m} \frac{c_t^{\mathrm{line}} - c_t}{\max(1, c_t^{\mathrm{lin
 
 where $t_m$ is the year of peak citations $c_{\max}$, and $c_t^{\mathrm{line}}$ is the linear interpolation between $(0, c_0)$ and $(t_m, c_{\max})$.
 
-Sign convention here: a paper that stays flat then spikes has **positive** B (area above the line, below the trajectory at peak).
+Sign convention here: a paper that stays flat then spikes has **positive** B
+because the baseline sits above the dormant trajectory before the peak.
 
 Also returned per paper:
 - `peak_year`, `peak_citations`
-- `awakening_year` — first year the trajectory exceeds the baseline by ≥50% (and is > 2 citations)
+- `awakening_year` — heuristic year of maximum positive gap from the baseline before the peak
 - `sleep_duration = awakening_year − publication_year`
 
 Papers with fewer than 5 years of trajectory after publication are dropped.
+The default run excludes the current partial calendar year from annual citation
+trajectories; use `--max-citation-year` to pin a reproducible cutoff.
 
 ## Output schema (`papers.json`)
 
@@ -79,6 +83,7 @@ Records are sorted by `B` descending, so the head of the file is the candidate s
 - OpenAlex `counts_by_year` only reports years with at least one citation. Missing years are treated as zero in trajectory reconstruction.
 - Van Raan's B is sensitive to peak position. A paper with a late, small peak can score high despite negligible impact — downstream filters on `cited_by_count` or `peak_citations` are advised when interpreting.
 - Field boundaries use OpenAlex's primary-topic taxonomy, which is imperfect for interdisciplinary work.
+- The corpus is sorted by `cited_by_count:desc` inside each field/decade bin, so it is a high-citation stratified sample rather than an unbiased census.
 
 ## References
 
