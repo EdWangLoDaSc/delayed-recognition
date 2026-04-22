@@ -10,6 +10,7 @@ Usage:
 """
 
 import argparse
+from datetime import datetime
 import json
 import math
 import os
@@ -41,7 +42,11 @@ MIN_CITATIONS = 5
 
 # ── Beauty Coefficient B ─────────────────────────────────────────────────────
 
-def compute_beauty_coefficient(pub_year: int, counts_by_year: list[dict]) -> dict | None:
+def compute_beauty_coefficient(
+    pub_year: int,
+    counts_by_year: list[dict],
+    max_citation_year: int | None = None,
+) -> dict | None:
     """
     Compute Van Raan's Beauty Coefficient B.
 
@@ -49,7 +54,7 @@ def compute_beauty_coefficient(pub_year: int, counts_by_year: list[dict]) -> dic
     B measures the degree to which the paper's citation trajectory deviates
     from a straight line connecting its initial citation rate to its peak.
 
-    B = sum over t in [0, t_m] of  (c_t - ct_line_t) / max(1, ct_line_t)
+    B = sum over t in [0, t_m] of  (ct_line_t - c_t) / max(1, ct_line_t)
 
     where ct_line_t is the linearly interpolated value at year t between
     (0, c_0) and (t_m, c_max).
@@ -58,7 +63,14 @@ def compute_beauty_coefficient(pub_year: int, counts_by_year: list[dict]) -> dic
     or None if data is insufficient.
     """
     # Build a year -> citations mapping
-    year_map = {entry["year"]: entry["cited_by_count"] for entry in counts_by_year}
+    if max_citation_year is None:
+        max_citation_year = datetime.now().year - 1
+
+    year_map = {
+        entry["year"]: entry["cited_by_count"]
+        for entry in counts_by_year
+        if entry["year"] <= max_citation_year
+    }
 
     # OpenAlex counts_by_year only goes back ~10-12 years for most papers.
     # We need to reconstruct the full trajectory from pub_year to the latest year.
@@ -91,23 +103,24 @@ def compute_beauty_coefficient(pub_year: int, counts_by_year: list[dict]) -> dic
 
     c_0 = trajectory[0]
 
-    # Compute B
+    # Compute B. Positive values indicate a trajectory below the line until
+    # its peak, which matches the delayed-recognition reading in the README.
     B = 0.0
+    largest_gap = float("-inf")
+    awakening_t = t_m
     for t in range(0, t_m + 1):
         # Linear interpolation between (0, c_0) and (t_m, c_max)
         ct_line = c_0 + (c_max - c_0) * t / t_m
         denominator = max(1.0, ct_line)
-        B += (trajectory[t] - ct_line) / denominator
+        gap = ct_line - trajectory[t]
+        B += gap / denominator
+        if 0 < t < t_m and gap > largest_gap:
+            largest_gap = gap
+            awakening_t = t
 
     # Sleeping beauty: sleep duration = years before awakening
-    # Awakening = first year where citations exceed the linear baseline by a threshold
-    awakening_year = min_year + t_m  # default to peak
-    for t in range(1, t_m):
-        ct_line = c_0 + (c_max - c_0) * t / t_m
-        if trajectory[t] > ct_line * 1.5 and trajectory[t] > 2:
-            awakening_year = min_year + t
-            break
-
+    # Awakening = year of maximum positive gap from the baseline before peak.
+    awakening_year = min_year + awakening_t
     sleep_duration = awakening_year - min_year
 
     return {
@@ -233,7 +246,7 @@ def fetch_field_sample(
 
 # ── Transform & Export ───────────────────────────────────────────────────────
 
-def transform_paper(work: dict) -> dict | None:
+def transform_paper(work: dict, max_citation_year: int | None = None) -> dict | None:
     """Transform a raw OpenAlex work into a slim record with Beauty Coefficient."""
     pub_year = work.get("publication_year")
     counts = work.get("counts_by_year", [])
@@ -241,7 +254,7 @@ def transform_paper(work: dict) -> dict | None:
     if not pub_year or not counts:
         return None
 
-    beauty = compute_beauty_coefficient(pub_year, counts)
+    beauty = compute_beauty_coefficient(pub_year, counts, max_citation_year=max_citation_year)
     if beauty is None:
         return None
 
@@ -288,6 +301,8 @@ def main():
                         help="Target papers per field (~50k total across 3 fields)")
     parser.add_argument("--output", type=str, default="../data/papers.json",
                         help="Output JSON file path")
+    parser.add_argument("--max-citation-year", type=int, default=datetime.now().year - 1,
+                        help="Last complete citation year to include (default: previous calendar year)")
     args = parser.parse_args()
 
     # Setup
@@ -317,7 +332,7 @@ def main():
     print("Computing Beauty Coefficients ...")
     transformed = []
     for work in all_raw:
-        record = transform_paper(work)
+        record = transform_paper(work, max_citation_year=args.max_citation_year)
         if record:
             transformed.append(record)
 

@@ -25,8 +25,8 @@ python3 -m http.server 8000
 
 Then open **<http://localhost:8000/frontend/index.html>** in a browser.
 
-The page fetches `data/papers.json` (≈34 MB) directly. First load takes a
-few seconds; after that everything is interactive.
+The page fetches `data/papers.json` (≈34 MB, tracked with Git LFS) directly.
+First load takes a few seconds; after that everything is interactive.
 
 > **Why not just open `index.html` in Finder?** Because the page loads JS
 > modules and JSON via `fetch`, browsers block `file://` requests. The
@@ -54,10 +54,11 @@ few seconds; after that everything is interactive.
 │   ├── README.md              ← Pipeline documentation
 │   └── cache/                 ← Raw API JSONL cache (gitignored)
 ├── frontend/
-│   ├── index.html             ← Editorial-style demo page
+│   ├── index.html             ← Question-led dashboard page
 │   ├── src/
+│   │   ├── analysis.js          ← Question modes, Beauty score summaries
 │   │   ├── trajectory_chart.js  ← D3 context-and-spotlight trajectory chart
-│   │   └── histogram_panel.js   ← D3 small-multiples histogram of B
+│   │   └── histogram_panel.js   ← D3 small-multiples histogram of delay score
 │   └── README.md              ← Component API documentation
 ├── proposal_2page_final (1).pdf
 └── README.md                  ← (this file)
@@ -69,25 +70,32 @@ few seconds; after that everything is interactive.
 
 The atlas is organized as two ruled sections:
 
-1. **§ 01 — The Distribution of Beauty.** A small-multiples histogram of B
-   across the three fields. A faint zero rule separates early-peak papers
-   (cool) from delayed-peak papers (warm); the long warm tail on the right
-   of each facet is where sleeping beauties live.
+1. **Beauty Score Distribution.** A small-multiples histogram of
+   Beauty score B across the three fields. Higher B indicates a stronger
+   delayed-recognition pattern.
 
-2. **§ 02 — Trajectories in Time.** Every paper aligned to its year of
+2. **Trajectories in Time.** Papers are aligned to their year of
    publication. A grey interquartile band and median line trace the
-   ordinary life of a paper; the brightest ~16 works (by |B|) are drawn as
-   labeled lines on top, each with a dot marking the year it peaked. Brush
-   the x-axis to filter by the timing of the peak.
+   ordinary life of the current field/year-window context; the spotlight works
+   are drawn as labeled lines on top, each with a dot marking the year it
+   peaked.
 
 Interactive controls in the toolbar:
 
 | Control | Purpose |
 |---|---|
+| **Analytical question** | Changes the ranking logic from long-sleep awakenings to late-impact or recent-awakening views. |
 | **Field** | Restrict to CS, physics, or molecular biology. |
-| **Min ∣B∣** | Hide papers with |B| below a threshold — drops the bulk, keeps the sleepers. |
-| **Decade** | 1990–1999 or 2000–2010. |
-| **Spotlight** | How many top-|B| trajectories to draw (4–40). |
+| **Publication window** | Set a continuous publication-year range from 1990–2010. |
+| **Min Beauty B** | Hide papers below a Beauty score threshold. |
+| **Min peak age** | Require the citation peak to occur at least this many years after publication. |
+| **Spotlight lines** | Increase or reduce the number of labeled trajectories on screen. |
+| **Search** | Search the local corpus by title, author, venue, topic, or field. |
+| **Methods** | Show formulas, sampling scope, denominators, and cautions next to the interface. |
+
+The current dashboard also links paper selection across search, trajectories,
+histograms, ranked rows, and a compact selected-paper summary with its Beauty
+score, rank, field position, peak timing, and mini citation trajectory.
 
 ---
 
@@ -101,6 +109,9 @@ cd data_pipeline
 pip install requests
 python fetch_openalex.py --email you@example.edu --per-field 17000 --output ../data/papers.json
 ```
+
+By default the pipeline excludes the current partial citation year. Override
+with `--max-citation-year` only when you know the annual counts are complete.
 
 Registering an email opts you into OpenAlex's polite pool (higher rate
 limits). A full rebuild takes roughly 10–15 minutes on a good connection.

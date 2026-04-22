@@ -2,774 +2,1802 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Delayed Recognition — An Atlas of Sleeping Beauties</title>
+    <title>Delayed Recognition Atlas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..760,0..100&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --paper:       #f2ebdc;
-        --paper-soft:  #ebe2cf;
-        --paper-deep:  #e2d7bd;
-        --ink:         #1c1815;
-        --ink-soft:    #3a332b;
-        --muted:       #7a6f5d;
-        --rule:        #c9bfa8;
-        --rule-soft:   #d9d0b9;
-        --warm:        #a33a1f;   /* high B, burnt sienna */
-        --warm-soft:   #c76a43;
-        --cool:        #2d4a6b;   /* low B, prussian blue */
-        --ochre:       #c9891b;
-        --display:     "Fraunces", "EB Garamond", Georgia, serif;
-        --body:        "EB Garamond", Georgia, serif;
-        --mono:        "JetBrains Mono", ui-monospace, Menlo, monospace;
+        --bg: #f7f5f0;
+        --surface: #ffffff;
+        --surface-soft: #eef3ef;
+        --ink: #17201c;
+        --ink-soft: #34423c;
+        --muted: #64706a;
+        --rule: #d8ddd6;
+        --rule-strong: #9ba89f;
+        --warm: #b34724;
+        --warm-soft: #d9794a;
+        --cool: #25606d;
+        --accent: #2d6b55;
+        --accent-soft: #dce9df;
+        --display: "Fraunces", Georgia, serif;
+        --body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
       }
 
       * { box-sizing: border-box; }
       html, body { margin: 0; padding: 0; }
       body {
-        background: var(--paper);
+        min-height: 100vh;
+        background: var(--bg);
         color: var(--ink);
         font-family: var(--body);
-        font-size: 17px;
-        line-height: 1.55;
-        font-feature-settings: "liga", "kern", "onum";
-        position: relative;
-        min-height: 100vh;
+        font-size: 15px;
+        line-height: 1.45;
       }
 
-      /* Paper grain */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background-image: radial-gradient(rgba(28, 24, 21, 0.035) 1px, transparent 1px);
-        background-size: 3px 3px;
-        mix-blend-mode: multiply;
-        z-index: 0;
+      button, input, select {
+        font: inherit;
+      }
+
+      button {
+        min-height: 38px;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      button:hover, button:focus-visible {
+        border-color: var(--accent);
+        outline: 2px solid rgba(45, 107, 85, 0.18);
+        outline-offset: 2px;
       }
 
       .page {
-        max-width: 1180px;
+        width: min(1440px, 100%);
         margin: 0 auto;
-        padding: 56px 48px 120px;
-        position: relative;
-        z-index: 1;
+        padding: 22px 28px 28px;
       }
 
-      /* Masthead */
       .masthead {
         display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: end;
-        gap: 32px;
-        padding-bottom: 20px;
-        border-bottom: 1.5px solid var(--ink);
-        margin-bottom: 6px;
-      }
-      .masthead .folio {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin: 0 0 14px;
-      }
-      .masthead h1 {
-        font-family: var(--display);
-        font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
-        font-weight: 400;
-        font-style: italic;
-        font-size: clamp(44px, 6.4vw, 86px);
-        line-height: 0.95;
-        letter-spacing: -0.02em;
-        margin: 0;
-        color: var(--ink);
-      }
-      .masthead h1 em {
-        font-style: normal;
-        font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
-        color: var(--warm);
-      }
-      .masthead .edition {
-        font-family: var(--mono);
-        font-size: 11px;
-        line-height: 1.6;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--ink-soft);
-        text-align: right;
-        white-space: nowrap;
-      }
-      .masthead .edition span { display: block; }
-      .masthead .edition .rule-small {
-        width: 28px;
-        height: 1px;
-        background: var(--ink);
-        display: inline-block;
-        margin: 6px 0;
-      }
-
-      .thin-rule {
-        border: 0;
-        border-top: 0.5px solid var(--ink);
-        margin: 6px 0 40px;
-      }
-
-      /* Dek */
-      .dek {
-        font-family: var(--display);
-        font-variation-settings: "opsz" 48, "SOFT" 20;
-        font-weight: 300;
-        font-size: clamp(20px, 1.6vw, 23px);
-        line-height: 1.45;
-        max-width: 44em;
-        color: var(--ink-soft);
-        margin: 0 0 44px;
-      }
-      .dek .caps {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--warm);
-        margin-right: 10px;
-        font-weight: 500;
-      }
-
-      /* Toolbar */
-      .toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 28px;
-        align-items: flex-end;
-        padding: 22px 26px;
-        background: var(--paper-soft);
-        border: 0.5px solid var(--rule);
-        border-left: 3px solid var(--warm);
-        margin-bottom: 44px;
-      }
-      .toolbar label {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        font-family: var(--mono);
-        font-size: 10.5px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .toolbar select,
-      .toolbar input {
-        font-family: var(--body);
-        font-size: 16px;
-        color: var(--ink);
-        background: transparent;
-        border: 0;
-        border-bottom: 1px solid var(--ink);
-        padding: 4px 2px;
-        min-width: 160px;
-        outline: none;
-        transition: border-color .2s;
-      }
-      .toolbar select:focus,
-      .toolbar input:focus { border-bottom-color: var(--warm); }
-
-      /* Range slider — editorial hairline */
-      .toolbar .range-wrap { min-width: 200px; display: flex; flex-direction: column; gap: 4px; }
-      .toolbar .range-wrap .range-val {
-        font-family: var(--display);
-        font-variation-settings: "opsz" 48;
-        font-style: italic;
-        font-weight: 600;
-        font-size: 18px;
-        color: var(--warm);
-        letter-spacing: 0;
-        text-transform: none;
-      }
-      .toolbar input[type=range] {
-        -webkit-appearance: none; appearance: none;
-        background: transparent;
-        border: 0; padding: 0; margin: 6px 0 0;
-        width: 100%; min-width: 0;
-        height: 18px;
-      }
-      .toolbar input[type=range]::-webkit-slider-runnable-track {
-        height: 1px; background: var(--ink); border: 0;
-      }
-      .toolbar input[type=range]::-moz-range-track {
-        height: 1px; background: var(--ink); border: 0;
-      }
-      .toolbar input[type=range]::-webkit-slider-thumb {
-        -webkit-appearance: none; appearance: none;
-        width: 14px; height: 14px; border-radius: 50%;
-        background: var(--paper);
-        border: 1.5px solid var(--warm);
-        margin-top: -6.5px;
-        cursor: grab;
-        box-shadow: 0 1px 2px rgba(28,24,21,0.25);
-        transition: transform .15s;
-      }
-      .toolbar input[type=range]::-webkit-slider-thumb:active { transform: scale(1.15); cursor: grabbing; }
-      .toolbar input[type=range]::-moz-range-thumb {
-        width: 14px; height: 14px; border-radius: 50%;
-        background: var(--paper);
-        border: 1.5px solid var(--warm);
-        cursor: grab;
-      }
-      .toolbar .status {
-        margin-left: auto;
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--ink-soft);
-      }
-      .toolbar .status b {
-        font-family: var(--display);
-        font-variation-settings: "opsz" 48;
-        font-weight: 600;
-        font-style: italic;
-        font-size: 20px;
-        color: var(--warm);
-        letter-spacing: 0;
-        text-transform: none;
-        margin-right: 4px;
-      }
-
-      /* Section */
-      section { margin-bottom: 72px; position: relative; }
-      .section-head {
-        display: grid;
-        grid-template-columns: 64px 1fr auto;
-        align-items: baseline;
-        gap: 18px;
-        border-top: 1px solid var(--ink);
-        padding-top: 14px;
-        margin-bottom: 22px;
-      }
-      .section-head .num {
-        font-family: var(--mono);
-        font-size: 11px;
-        letter-spacing: 0.2em;
-        color: var(--warm);
-      }
-      .section-head h2 {
-        font-family: var(--display);
-        font-variation-settings: "opsz" 72, "SOFT" 10;
-        font-weight: 500;
-        font-style: italic;
-        font-size: 32px;
-        letter-spacing: -0.01em;
-        margin: 0;
-      }
-      .section-head .aside {
-        font-family: var(--mono);
-        font-size: 10.5px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .section-sub {
-        font-family: var(--body);
-        font-size: 16px;
-        line-height: 1.5;
-        color: var(--ink-soft);
-        margin: 0 0 26px 82px;
-        max-width: 52em;
-        font-style: italic;
-      }
-
-      .chart-frame {
-        background: #fbf7ec;
-        border: 0.5px solid var(--rule);
-        padding: 18px 22px 10px;
-        position: relative;
-        box-shadow: 0 1px 0 rgba(28,24,21,0.04), 0 30px 50px -40px rgba(28,24,21,0.25);
-      }
-      .chart-frame::before,
-      .chart-frame::after {
-        content: "";
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border: 1px solid var(--ink);
-      }
-      .chart-frame::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
-      .chart-frame::after  { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
-
-      /* Footer */
-      footer {
-        margin-top: 100px;
-        padding-top: 22px;
-        border-top: 1px solid var(--ink);
-        display: flex;
-        justify-content: space-between;
-        font-family: var(--mono);
-        font-size: 10.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      /* D3 overrides */
-      .chart-frame svg text { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-soft); }
-      .chart-frame svg .domain { stroke: var(--ink); stroke-width: 0.6; }
-      .chart-frame svg .tick line { stroke: var(--rule); }
-      .chart-frame svg .axis-label { font-family: var(--display); font-style: italic; font-size: 12px; font-weight: 500; fill: var(--ink); }
-      .chart-frame svg .facet-title { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 15px; fill: var(--ink); }
-      .brush .selection { fill: var(--warm); fill-opacity: 0.08; stroke: var(--warm); stroke-dasharray: 2 3; }
-      .brush .handle { fill: var(--warm); }
-
-      .tooltip {
-        position: absolute;
-        pointer-events: none;
-        background: var(--ink);
-        color: var(--paper);
-        padding: 10px 12px;
-        max-width: 340px;
-        font-family: var(--body);
-        font-size: 13.5px;
-        line-height: 1.4;
-        opacity: 0;
-        transition: opacity 120ms ease;
-        box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
-      }
-      .tooltip .tt-title { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 15px; margin-bottom: 4px; }
-      .tooltip .tt-meta  { font-size: 12px; color: #d9cfb6; }
-      .tooltip .tt-stats {
-        margin-top: 6px; padding-top: 6px;
-        border-top: 0.5px solid rgba(255,255,255,0.25);
-        font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em;
-        color: var(--warm-soft);
-      }
-
-      /* Loading state */
-      .loading {
-        display: flex; align-items: center; justify-content: center;
-        min-height: 320px;
-        font-family: var(--display); font-style: italic; font-size: 22px;
-        color: var(--muted);
-      }
-      .loading::after {
-        content: "…";
-        display: inline-block;
-        animation: dots 1.4s steps(4, end) infinite;
-        width: 1em; text-align: left;
-      }
-      @keyframes dots { 0%{content:""} 25%{content:"."} 50%{content:".."} 75%{content:"..."} }
-
-      /* Detail card */
-      .detail {
-        margin-top: 16px;
-        background: var(--paper-soft);
-        border: 0.5px solid var(--rule);
-        border-left: 3px solid var(--warm);
-        padding: 20px 24px 22px;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 220px;
-        gap: 28px;
-        position: relative;
-      }
-      .detail.empty {
-        grid-template-columns: 1fr;
-        border-left-color: var(--rule);
-        color: var(--muted);
-        font-style: italic;
-        padding: 28px 24px;
-        text-align: center;
-        font-family: var(--display);
-        font-size: 16px;
-      }
-      .detail .dtitle {
-        font-family: var(--display);
-        font-variation-settings: "opsz" 72, "SOFT" 10;
-        font-style: italic;
-        font-weight: 500;
-        font-size: 22px;
-        line-height: 1.25;
-        margin: 0 0 6px;
-        color: var(--ink);
-      }
-      .detail .dmeta {
-        font-family: var(--body);
-        font-size: 14.5px;
-        color: var(--ink-soft);
-        margin: 0 0 4px;
-      }
-      .detail .dfield {
-        font-family: var(--mono);
-        font-size: 10.5px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin: 0 0 14px;
-      }
-      .detail .dstats {
-        display: flex;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
         gap: 22px;
-        flex-wrap: wrap;
-        margin: 10px 0 0;
-        padding-top: 12px;
-        border-top: 0.5px solid var(--rule);
+        align-items: start;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--ink);
       }
-      .detail .dstats .stat { display: flex; flex-direction: column; gap: 2px; }
-      .detail .dstats .label {
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 680px;
+        font-family: var(--display);
+        font-size: clamp(32px, 4vw, 54px);
+        font-weight: 660;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .dek {
+        margin: 10px 0 0;
+        max-width: 680px;
+        color: var(--ink-soft);
+        font-size: clamp(14px, 1.2vw, 16px);
+      }
+
+      .mast-side {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .mast-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .primary-button {
+        background: var(--ink);
+        color: var(--surface);
+        border-color: var(--ink);
+        padding: 0 14px;
+      }
+
+      .ghost-button {
+        padding: 0 14px;
+      }
+
+      .metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1px;
+        margin: 0;
+        background: var(--rule);
+        border: 1px solid var(--rule);
+      }
+
+      .metric {
+        background: var(--surface);
+        padding: 7px 10px;
+        flex: 1 1 128px;
+        min-width: 0;
+      }
+
+      .metric span {
+        display: block;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 3px;
+        font-family: var(--display);
+        font-size: clamp(16px, 1.4vw, 21px);
+        line-height: 1;
+        font-weight: 660;
+        color: var(--ink);
+      }
+
+      .control-dock {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: grid;
+        grid-template-columns: minmax(250px, 1.2fr) repeat(5, minmax(108px, 0.72fr));
+        gap: 12px;
+        align-items: end;
+        padding: 14px;
+        background: rgba(247, 245, 240, 0.96);
+        border: 1px solid var(--rule);
+        backdrop-filter: blur(10px);
+      }
+
+      label.control {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .control span {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      select, input[type="number"], input[type="search"] {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
+        color: var(--ink);
+        padding: 7px 9px;
+        border-radius: 3px;
+        box-shadow: inset 0 -1px 0 rgba(23, 32, 28, 0.08);
+      }
+
+      select {
+        appearance: none;
+        padding-right: 34px;
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%),
+          linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%),
+          linear-gradient(to right, var(--rule), var(--rule));
+        background-position:
+          calc(100% - 17px) 16px,
+          calc(100% - 11px) 16px,
+          calc(100% - 30px) 8px;
+        background-size: 6px 6px, 6px 6px, 1px 22px;
+        background-repeat: no-repeat;
+      }
+
+      select:focus-visible, input:focus-visible {
+        border-color: var(--accent);
+        outline: 2px solid rgba(45, 107, 85, 0.18);
+        outline-offset: 1px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .year-window {
+        position: relative;
+        height: 28px;
+        --start: 0%;
+        --end: 100%;
+      }
+
+      .year-window input[type="range"] {
+        position: absolute;
+        inset: 0;
+        height: 28px;
+        margin: 0;
+        appearance: none;
+        background: transparent;
+        pointer-events: none;
+      }
+
+      .year-window input[type="range"]::-webkit-slider-runnable-track {
+        height: 4px;
+        background: transparent;
+      }
+
+      .year-window input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        margin-top: -5.5px;
+        border: 2px solid var(--accent);
+        border-radius: 999px;
+        background: var(--surface);
+        box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.9);
+        pointer-events: auto;
+      }
+
+      .year-window input[type="range"]::-moz-range-track {
+        height: 4px;
+        background: transparent;
+      }
+
+      .year-window input[type="range"]::-moz-range-thumb {
+        width: 13px;
+        height: 13px;
+        border: 2px solid var(--accent);
+        border-radius: 999px;
+        background: var(--surface);
+        pointer-events: auto;
+      }
+
+      .year-track {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 12px;
+        height: 4px;
+        background: var(--surface-soft);
+        border: 1px solid var(--rule);
+      }
+
+      .year-track span {
+        position: absolute;
+        top: -1px;
+        bottom: -1px;
+        left: var(--start);
+        right: calc(100% - var(--end));
+        background: linear-gradient(90deg, var(--cool), var(--accent));
+      }
+
+      .year-output {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        color: var(--ink-soft);
+      }
+
+      .question-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(230px, 320px);
+        gap: 24px;
+        align-items: start;
+        margin: 22px 0;
+        padding: 18px 0;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+      }
+
+      .question-panel > * {
+        min-width: 0;
+      }
+
+      .question-panel h2 {
+        margin: 0 0 8px;
+        font-family: var(--display);
+        font-size: clamp(23px, 2.8vw, 38px);
+        font-weight: 660;
+        letter-spacing: 0;
+      }
+
+      .question-panel p {
+        margin: 0;
+        color: var(--ink-soft);
+        max-width: 860px;
+      }
+
+      .state-line {
         font-family: var(--mono);
         font-size: 9.5px;
-        letter-spacing: 0.16em;
+        letter-spacing: 0.06em;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+
+      .question-tools {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .search-combobox {
+        position: relative;
+        min-width: 0;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 334px;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .main-stack {
+        display: grid;
+        gap: 18px;
+        min-width: 0;
+      }
+
+      .trajectory-panel { order: 1; }
+      .distribution-panel { order: 2; }
+      .table-panel { order: 3; }
+
+      .side-stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--rule);
+        min-width: 0;
+      }
+
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: baseline;
+        padding: 14px 16px 0;
+      }
+
+      .panel h3 {
+        margin: 0;
+        font-family: var(--display);
+        font-size: 22px;
+        line-height: 1.1;
+        font-weight: 650;
+        letter-spacing: 0;
+      }
+
+      .panel .aside {
+        display: none;
+      }
+
+      .panel-copy {
+        margin: 8px 16px 0;
+        max-width: 900px;
+        color: var(--ink-soft);
+        font-size: 13px;
+      }
+
+      .chart-pad {
+        padding: 10px 10px 8px;
+      }
+
+      .empty-chart {
+        display: grid;
+        min-height: 220px;
+        place-items: center;
+        color: var(--muted);
+        font-family: var(--display);
+        font-size: 20px;
+      }
+
+      .field-summary {
+        display: grid;
+        gap: 1px;
+        background: var(--rule);
+      }
+
+      .field-window-summary {
+        display: grid;
+        gap: 7px;
+        padding: 10px 14px;
+        background: var(--surface);
+      }
+
+      .field-window-ramp {
+        height: 7px;
+        background: linear-gradient(90deg, var(--cool), var(--warm));
+      }
+
+      .field-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        padding: 12px 14px;
+        background: var(--surface);
+      }
+
+      .field-row.active,
+      .topic-row.active {
+        background: var(--accent-soft);
+      }
+
+      .field-row button {
+        min-height: 30px;
+        padding: 0 8px;
+        font-size: 12px;
+      }
+
+      .field-name {
+        margin: 0 0 6px;
+        font-weight: 700;
+      }
+
+      .field-delay-track {
+        position: relative;
+        height: 9px;
+        margin: 7px 0 6px;
+        background: var(--surface-soft);
+        border: 1px solid var(--rule);
+      }
+
+      .field-delay-track::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: var(--median, 0%);
+        background: color-mix(in srgb, var(--accent) 20%, transparent);
+      }
+
+      .field-delay-track .median,
+      .field-delay-track .p90 {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        width: 2px;
+      }
+
+      .field-delay-track .median {
+        left: var(--median, 0%);
+        background: var(--accent);
+      }
+
+      .field-delay-track .p90 {
+        left: var(--p90, 0%);
+        background: var(--warm);
+      }
+
+      .micro {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+        min-width: 0;
+      }
+
+      .selection-cue {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
+        gap: 14px;
+        align-items: center;
+        margin-top: 14px;
+        padding: 12px 14px;
+        border: 1px solid var(--accent);
+        border-left-width: 4px;
+        background: linear-gradient(90deg, rgba(220, 233, 223, 0.92), rgba(255, 255, 255, 0.82));
+      }
+
+      .selection-cue[hidden] {
+        display: none;
+      }
+
+      .selection-cue h3 {
+        margin: 0 0 4px;
+        font-family: var(--display);
+        font-size: 18px;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      .selection-cue p {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 12px;
+      }
+
+      .selection-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1px;
+        margin-top: 9px;
+        background: var(--rule);
+      }
+
+      .selection-stat {
+        min-width: 94px;
+        flex: 1 1 94px;
+        padding: 7px 8px;
+        background: var(--surface);
+      }
+
+      .selection-stat span {
+        display: block;
+        font-family: var(--mono);
+        font-size: 8.5px;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--muted);
       }
-      .detail .dstats .val {
+
+      .selection-stat strong {
+        display: block;
+        margin-top: 2px;
+        font-size: 15px;
+      }
+
+      .selection-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+      }
+
+      .selection-actions button {
+        min-height: 30px;
+        padding: 0 9px;
+        font-size: 12px;
+      }
+
+      .selection-spark-wrap {
+        min-width: 0;
+      }
+
+      .selection-spark {
+        width: 100%;
+        height: 112px;
+        display: block;
+        background: rgba(255, 255, 255, 0.54);
+        border-left: 1px solid var(--rule);
+      }
+
+      .selection-flash {
+        animation: selectionPulse 950ms ease-out;
+      }
+
+      @keyframes selectionPulse {
+        0% { box-shadow: 0 0 0 0 rgba(45, 107, 85, 0.34); }
+        100% { box-shadow: 0 0 0 14px rgba(45, 107, 85, 0); }
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 0 9px;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .chip-label {
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .chip button {
+        flex: 0 0 auto;
+        min-height: 20px;
+        padding: 0 5px;
+        border: 0;
+        background: transparent;
+        color: var(--accent);
+      }
+
+      .topic-list {
+        display: grid;
+        gap: 1px;
+        background: var(--rule);
+      }
+
+      .topic-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        background: var(--surface);
+      }
+
+      .topic-row button {
+        min-height: 30px;
+        padding: 0 8px;
+        font-size: 12px;
+      }
+
+      .topic-name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-weight: 700;
+      }
+
+      .search-results {
+        display: none;
+        gap: 1px;
+        background: var(--rule);
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 30;
+        border: 1px solid var(--rule-strong);
+        box-shadow: 0 14px 28px rgba(23, 32, 28, 0.14);
+        max-width: 100%;
+        max-height: 360px;
+        overflow: auto;
+      }
+
+      .search-results.open {
+        display: grid;
+      }
+
+      .search-box {
+        min-width: 0;
+      }
+
+      .search-results button {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-height: 0;
+        padding: 10px 12px;
+        border: 0;
+        background: var(--surface);
+        text-align: left;
+        overflow: hidden;
+      }
+
+      .search-results button.selected {
+        background: var(--accent-soft);
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+
+      .search-results b {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .notice {
+        border-left: 3px solid var(--warm);
+        padding: 12px 14px;
+        background: #fbf0ea;
+        color: #542515;
+        font-size: 13px;
+      }
+
+      .rank-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 13px;
+      }
+
+      #rankTable {
+        overflow-x: auto;
+      }
+
+      .rank-table th,
+      .rank-table td {
+        padding: 10px 9px;
+        border-top: 1px solid var(--rule);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .rank-table th {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--surface-soft);
+      }
+
+      .rank-table tbody tr {
+        cursor: pointer;
+      }
+
+      .rank-table tbody tr:hover,
+      .rank-table tbody tr:focus {
+        background: var(--accent-soft);
+        outline: 0;
+      }
+
+      .rank-table tbody tr.selected {
+        background: #dce9df;
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+
+      .rank-table .title-cell {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .rank-table .title-cell b {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .rank-table .num-cell {
+        font-family: var(--mono);
+        text-align: right;
+        font-size: 12px;
+      }
+
+      .chart-pad svg text { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-soft); }
+      .chart-pad svg .domain { stroke: var(--ink); stroke-width: 0.7; }
+      .chart-pad svg .tick line { stroke: var(--rule); }
+      .chart-pad svg .axis-label {
         font-family: var(--display);
-        font-variation-settings: "opsz" 48;
-        font-style: italic;
-        font-weight: 600;
-        font-size: 20px;
+        font-size: 12px;
+        font-weight: 650;
+        fill: var(--ink);
+      }
+      .chart-pad svg .facet-title {
+        font-family: var(--display);
+        font-size: 15px;
+        font-weight: 650;
+        fill: var(--ink);
+      }
+      .brush .selection {
+        fill: var(--accent);
+        fill-opacity: 0.1;
+        stroke: var(--accent);
+        stroke-dasharray: 2 3;
+      }
+
+      dialog {
+        width: min(920px, calc(100vw - 28px));
+        max-height: min(760px, calc(100vh - 28px));
+        padding: 0;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
         color: var(--ink);
       }
-      .detail .dstats .val.warm { color: var(--warm); }
-      .detail .dstats .val.cool { color: var(--cool); }
-      .detail a.doi {
-        font-family: var(--mono);
-        font-size: 11px;
-        color: var(--warm);
-        text-decoration: none;
-        border-bottom: 1px dotted var(--warm);
+
+      dialog::backdrop { background: rgba(23, 32, 28, 0.42); }
+
+      .dialog-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: start;
+        padding: 20px 22px 14px;
+        border-bottom: 1px solid var(--rule);
       }
-      .detail a.doi:hover { color: var(--ink); border-bottom-color: var(--ink); }
-      .detail .close {
-        position: absolute;
-        top: 10px; right: 12px;
-        background: transparent; border: 0;
-        font-family: var(--mono);
-        font-size: 14px; color: var(--muted);
-        cursor: pointer;
-        padding: 4px 6px;
+
+      .dialog-head h2 {
+        margin: 0;
+        font-family: var(--display);
+        font-size: 30px;
+        letter-spacing: 0;
       }
-      .detail .close:hover { color: var(--warm); }
-      .detail .pinned-tag {
-        display: inline-block;
-        font-family: var(--mono);
-        font-size: 9.5px; letter-spacing: 0.18em;
-        color: var(--warm);
-        margin-right: 8px;
+
+      .dialog-body {
+        padding: 18px 22px 22px;
+        overflow: auto;
       }
-      .detail .spark {
-        width: 100%; height: 84px;
-        display: block;
+
+      .method-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
       }
-      .detail .spark-label {
-        font-family: var(--mono);
-        font-size: 9.5px; letter-spacing: 0.14em;
+
+      .method-card {
+        border: 1px solid var(--rule);
+        padding: 14px;
+      }
+
+      .method-card h3 {
+        margin: 0 0 8px;
+        font-family: var(--display);
+        font-size: 20px;
+      }
+
+      .method-card p {
+        margin: 0 0 8px;
+        color: var(--ink-soft);
+        font-size: 13px;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 24px;
+        padding-top: 18px;
+        border-top: 1px solid var(--rule);
         color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        margin-bottom: 4px;
       }
 
-      @media (max-width: 860px) {
-        .detail { grid-template-columns: 1fr; }
+      @media (max-width: 1180px) {
+        .control-dock {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+        .side-stack {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
 
-      @media (max-width: 760px) {
-        .page { padding: 36px 22px 80px; }
-        .masthead { grid-template-columns: 1fr; }
-        .masthead .edition { text-align: left; }
-        .section-head { grid-template-columns: auto 1fr; }
-        .section-head .aside { display: none; }
-        .section-sub { margin-left: 0; }
+      @media (max-width: 820px) {
+        .page { width: 100%; max-width: 100%; padding: 18px; }
+        .masthead, .question-panel, .metrics, .side-stack, .method-grid {
+          grid-template-columns: 1fr;
+        }
+        .mast-actions {
+          justify-content: flex-start;
+        }
+        .control-dock {
+          position: static;
+          grid-template-columns: 1fr;
+        }
+        .selection-cue {
+          grid-template-columns: 1fr;
+        }
+        .selection-actions {
+          justify-content: stretch;
+        }
+        .selection-actions button {
+          width: 100%;
+        }
+        .search-results {
+          position: static;
+          margin-top: 6px;
+          max-height: none;
+          box-shadow: none;
+        }
+        footer {
+          flex-direction: column;
+        }
+        .rank-table {
+          min-width: 0;
+        }
+        .rank-table th:nth-child(1),
+        .rank-table td:nth-child(1) {
+          width: 46px !important;
+        }
+        .rank-table th:nth-child(3),
+        .rank-table td:nth-child(3),
+        .rank-table th:nth-child(5),
+        .rank-table td:nth-child(5),
+        .rank-table th:nth-child(6),
+        .rank-table td:nth-child(6) {
+          display: none;
+        }
+        .rank-table th:nth-child(4),
+        .rank-table td:nth-child(4) {
+          width: 62px !important;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="page">
+    <main class="page">
       <header class="masthead">
         <div>
-          <p class="folio">Vol. I · No. 01 · DATA 31500 · Spring 2026</p>
-          <h1>Delayed <em>Recognition</em><br />in Academic <em>Literature</em>.</h1>
+          <p class="eyebrow">OpenAlex citation data · 1990-2010</p>
+          <h1>Delayed Recognition</h1>
+          <p class="dek">
+            Computer science, physics, and molecular biology papers scored by
+            Van Raan-style Beauty score B through the last complete citation year.
+          </p>
         </div>
-        <div class="edition">
-          <span>An Atlas of</span>
-          <span>Sleeping Beauties</span>
-          <span class="rule-small"></span>
-          <span>Kaboski · Amar</span>
-          <span>Wang · Yadav</span>
+        <div class="mast-side">
+          <div class="mast-actions">
+            <button class="primary-button" id="methodsBtn" type="button">Methods</button>
+            <button class="ghost-button" id="resetBtn" type="button">Reset</button>
+          </div>
+          <section class="metrics" id="metrics" aria-label="Corpus summary">
+            <div class="metric"><span>Status</span><strong>Loading</strong></div>
+            <div class="metric"><span>Corpus</span><strong>-</strong></div>
+            <div class="metric"><span>Median B</span><strong>-</strong></div>
+            <div class="metric"><span>High-B papers</span><strong>-</strong></div>
+            <div class="metric"><span>Citation cutoff</span><strong>-</strong></div>
+          </section>
         </div>
       </header>
-      <hr class="thin-rule" />
 
-      <p class="dek">
-        <span class="caps">Premise ·</span>
-        Some papers are ignored for years, then suddenly rediscovered. This
-        atlas charts citation trajectories across fifty thousand works in
-        computer science, physics, and molecular biology — ranked by Van
-        Raan's Beauty Coefficient, a measure of how sharply a paper's
-        reception awakens from dormancy.
-      </p>
-
-      <div class="toolbar">
-        <label>Field
-          <select id="field"><option value="">all disciplines</option></select>
+      <section class="control-dock" aria-label="Dashboard controls">
+        <label class="control">
+          <span>Analytical question</span>
+          <select id="mode"></select>
         </label>
-        <label>Min ∣B∣
-          <input id="minB" type="number" value="0" min="0" step="1" />
+        <label class="control">
+          <span>Field</span>
+          <select id="field"><option value="">All fields</option></select>
         </label>
-        <label>Decade
-          <select id="decade">
-            <option value="">1990 — 2010</option>
-            <option value="1990">1990 — 1999</option>
-            <option value="2000">2000 — 2010</option>
-          </select>
+        <label class="control">
+          <span>Publication window</span>
+          <div class="year-window">
+            <div class="year-track" aria-hidden="true"><span></span></div>
+            <input id="yearStart" type="range" min="1990" max="2010" step="1" value="1990" aria-label="Publication window start" />
+            <input id="yearEnd" type="range" min="1990" max="2010" step="1" value="2010" aria-label="Publication window end" />
+          </div>
+          <output id="yearWindowLabel" class="year-output">1990-2010</output>
         </label>
-        <label class="range-wrap">
-          Spotlight <span class="range-val" id="spotlightVal">16</span>
-          <input id="spotlight" type="range" min="4" max="40" step="1" value="16" />
+        <label class="control">
+          <span>Min Beauty B</span>
+          <input id="minDelay" type="number" min="0" max="40" step="1" value="0" />
         </label>
-        <div class="status" id="status"><b>—</b>loading corpus</div>
-      </div>
-
-      <section>
-        <div class="section-head">
-          <span class="num">§ 01</span>
-          <h2>The Distribution of Beauty.</h2>
-          <span class="aside">Fig. I · histogram, by field</span>
-        </div>
-        <p class="section-sub">
-          Most papers hew close to the line of ordinary decay. A stubborn
-          tail, however, refuses the expected shape — these are the sleepers.
-        </p>
-        <div class="chart-frame"><div id="histogram" class="loading"></div></div>
+        <label class="control">
+          <span>Min peak age</span>
+          <input id="peakAge" type="number" min="0" max="36" step="1" value="0" />
+        </label>
+        <label class="control">
+          <span>Spotlight lines</span>
+          <input id="spotlight" type="number" min="8" max="60" step="2" value="28" />
+        </label>
       </section>
 
-      <section>
-        <div class="section-head">
-          <span class="num">§ 02</span>
-          <h2>Trajectories in Time.</h2>
-          <span class="aside">Fig. II · spotlight against the median</span>
+      <section class="question-panel" aria-live="polite">
+        <div>
+          <p class="eyebrow">Current question</p>
+          <h2 id="questionTitle">-</h2>
+          <p id="questionCopy">-</p>
+          <div id="selectionCue" class="selection-cue" hidden></div>
+          <div class="active-filters" id="activeFilters"></div>
         </div>
-        <p class="section-sub">
-          All papers are aligned to their year of publication. The grey band
-          traces the ordinary life of a paper — median and interquartile
-          range. Atop it, a spotlight on the works with the most extreme
-          Beauty Coefficients: warm lines for delayed peaks, cool for early.
-          Each dot marks the year a paper reached its maximum attention.
-        </p>
-        <div class="chart-frame"><div id="trajectory" class="loading"></div></div>
-        <aside id="detail" class="detail empty">
-          Hover a spotlight line to preview it here · click to pin · click a histogram bar to narrow the spotlight to that slice of B.
+        <div class="question-tools">
+          <p class="state-line" id="stateLine">Fetching data.</p>
+          <div class="search-combobox">
+            <label class="control search-box">
+              <span>Find a paper</span>
+              <input id="search" type="search" placeholder="Title, author, venue, topic" aria-controls="searchResults" />
+            </label>
+            <div id="searchResults" class="search-results"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="main-stack">
+          <section class="panel distribution-panel">
+            <div class="panel-head">
+              <h3>Beauty Score Distribution</h3>
+            </div>
+            <p class="panel-copy">
+              Bar height is paper count. Click a bar to filter Beauty score B
+              used by the trajectory spotlight.
+            </p>
+            <div class="chart-pad"><div id="histogram" class="empty-chart">Loading distribution.</div></div>
+          </section>
+
+          <section class="panel trajectory-panel">
+            <div class="panel-head">
+              <h3>Trajectories in Time</h3>
+              <span class="aside">Context plus spotlight</span>
+            </div>
+            <p class="panel-copy" id="brushSummary">
+              Citation paths are aligned to publication year; warmer lines carry larger Beauty score B.
+            </p>
+            <div class="chart-pad"><div id="trajectory" class="empty-chart">Loading trajectories.</div></div>
+          </section>
+
+          <section class="panel table-panel">
+            <div class="panel-head">
+              <h3>Ranked Papers</h3>
+            </div>
+            <p class="panel-copy" id="rankContext">
+              The table uses the active analytical question and the same filters as the charts.
+              Select a row to pin its Beauty score, peak timing, and mini-trajectory.
+            </p>
+            <div id="rankTable"></div>
+          </section>
+        </div>
+
+        <aside class="side-stack">
+          <section class="panel">
+            <div class="panel-head">
+              <h3>Field Lens</h3>
+            </div>
+            <div class="field-summary" id="fieldSummary"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h3>Topic Lens</h3>
+            </div>
+            <div class="topic-list" id="topicLens"></div>
+          </section>
+
+          <div class="notice">
+            Annual OpenAlex citation bins are recent-window evidence. This dashboard can show
+            delayed-recognition candidates; it does not prove why recognition was delayed.
+          </div>
         </aside>
       </section>
 
       <footer>
-        <span>Source · OpenAlex REST API</span>
-        <span>After Van Raan (2004) · Ke et al. (2015)</span>
-        <span>Set in Fraunces &amp; EB Garamond</span>
+        <span>Source: OpenAlex Works API</span>
+        <span>Metric: Beauty score B, computed through 2025</span>
+        <span>Kaboski · Amar · Wang · Yadav</span>
       </footer>
-    </div>
+    </main>
+
+    <dialog id="methodsDialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">Data contract and cautions</p>
+          <h2>Methods</h2>
+        </div>
+        <button class="ghost-button" id="closeMethods" type="button">Close</button>
+      </div>
+      <div class="dialog-body">
+        <p>
+          The analytical object is an OpenAlex work with a DOI, a primary field assignment,
+          yearly citation bins, and a local delay score. The corpus is a high-citation,
+          stratified sample for interaction and hypothesis formation, not a neutral census
+          of all papers in each discipline.
+        </p>
+        <div class="method-grid" id="methodGrid"></div>
+      </div>
+    </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
     <script type="module">
-      import { renderTrajectoryChart } from "./src/trajectory_chart.js";
       import { renderHistogramPanel } from "./src/histogram_panel.js";
+      import { renderTrajectoryChart } from "./src/trajectory_chart.js";
+      import {
+        COMPLETE_CITATION_YEAR,
+        METHOD_CARDS,
+        QUESTION_MODES,
+        corpusSummary,
+        fieldSummaries,
+        filterPapers,
+        formatNumber,
+        normalizeCorpus,
+        rankPapers,
+        searchPapers,
+        shortField,
+        topicSummaries,
+      } from "./src/analysis.js";
 
-      const statusEl = document.getElementById("status");
-      const fieldEl = document.getElementById("field");
-      const minBEl = document.getElementById("minB");
-      const decadeEl = document.getElementById("decade");
-      const spotEl = document.getElementById("spotlight");
-      const spotValEl = document.getElementById("spotlightVal");
-      const histEl = document.getElementById("histogram");
-      const trajEl = document.getElementById("trajectory");
-      const detailEl = document.getElementById("detail");
+      const els = {
+        metrics: document.getElementById("metrics"),
+        mode: document.getElementById("mode"),
+        field: document.getElementById("field"),
+        yearStart: document.getElementById("yearStart"),
+        yearEnd: document.getElementById("yearEnd"),
+        yearWindowLabel: document.getElementById("yearWindowLabel"),
+        minDelay: document.getElementById("minDelay"),
+        peakAge: document.getElementById("peakAge"),
+        spotlight: document.getElementById("spotlight"),
+        search: document.getElementById("search"),
+        reset: document.getElementById("resetBtn"),
+        methodsBtn: document.getElementById("methodsBtn"),
+        methodsDialog: document.getElementById("methodsDialog"),
+        closeMethods: document.getElementById("closeMethods"),
+        methodGrid: document.getElementById("methodGrid"),
+        questionTitle: document.getElementById("questionTitle"),
+        questionCopy: document.getElementById("questionCopy"),
+        activeFilters: document.getElementById("activeFilters"),
+        selectionCue: document.getElementById("selectionCue"),
+        stateLine: document.getElementById("stateLine"),
+        histogram: document.getElementById("histogram"),
+        trajectory: document.getElementById("trajectory"),
+        fieldSummary: document.getElementById("fieldSummary"),
+        topicLens: document.getElementById("topicLens"),
+        searchResults: document.getElementById("searchResults"),
+        rankTable: document.getElementById("rankTable"),
+        rankContext: document.getElementById("rankContext"),
+        brushSummary: document.getElementById("brushSummary"),
+      };
 
-      statusEl.innerHTML = `<b>—</b>fetching papers.json`;
-      const t0 = performance.now();
-      const res = await fetch("../data/papers.json");
-      const papers = await res.json();
-      const loadSecs = ((performance.now() - t0) / 1000).toFixed(1);
-
-      const fields = Array.from(new Set(papers.map((p) => p.field))).sort();
-      for (const f of fields) {
-        const opt = document.createElement("option");
-        opt.value = f;
-        opt.textContent = f.toLowerCase();
-        fieldEl.appendChild(opt);
-      }
-
-      // Cross-view linkage state
-      let bRange = null;        // set by a histogram bar click
-      let brushRange = null;    // [lo, hi] for trajectory → histogram band highlight (in B space)
+      let papers = [];
+      let summary = null;
+      let delayRange = null;
+      let topicFilter = "";
       let pinnedPaper = null;
+      let searchTimer = null;
+      let publicationDomain = [1990, 2010];
 
-      // Context: field + decade only (NOT filtered by |B| or bRange) so the
-      // median/IQR trajectory remains a faithful reference.
-      function contextSet() {
-        const f = fieldEl.value;
-        const dec = decadeEl.value ? Number(decadeEl.value) : null;
-        return papers.filter((p) => {
-          if (f && p.field !== f) return false;
-          if (dec !== null) {
-            const hi = dec === 1990 ? 1999 : 2010;
-            if (p.publication_year < dec || p.publication_year > hi) return false;
+      initControls();
+      renderMethods();
+      await loadData();
+
+      async function loadData() {
+        try {
+          const response = await fetch("../data/papers.json");
+          const raw = await response.json();
+          if (!Array.isArray(raw)) throw new Error("papers.json did not parse as an array");
+          const normalized = normalizeCorpus(raw);
+          papers = normalized.papers;
+          summary = corpusSummary(papers);
+          publicationDomain = [summary.firstPublication || 1990, summary.lastPublication || 2010];
+          configureYearWindow(publicationDomain);
+          populateFieldOptions(summary.fields);
+          renderAll();
+        } catch (error) {
+          els.stateLine.textContent =
+            "Unable to load data/papers.json. If this is a fresh clone, run git lfs install && git lfs pull.";
+          els.metrics.innerHTML = metricHtml([
+            ["Status", "Data error"],
+            ["Corpus", "-"],
+            ["Median B", "-"],
+            ["High-B papers", "-"],
+            ["Citation cutoff", COMPLETE_CITATION_YEAR],
+          ]);
+          console.error(error);
+        }
+      }
+
+      function initControls() {
+        for (const mode of QUESTION_MODES) {
+          const option = document.createElement("option");
+          option.value = mode.key;
+          option.textContent = mode.label;
+          els.mode.appendChild(option);
+        }
+
+        els.mode.addEventListener("change", () => {
+          delayRange = null;
+          topicFilter = "";
+          renderAll();
+        });
+        [els.field, els.minDelay, els.peakAge, els.spotlight].forEach((el) =>
+          el.addEventListener("change", renderAll)
+        );
+        [els.yearStart, els.yearEnd].forEach((el) => {
+          el.addEventListener("input", () => {
+            syncYearWindow(el);
+            renderAll();
+          });
+        });
+        els.search.addEventListener("input", () => {
+          window.clearTimeout(searchTimer);
+          searchTimer = window.setTimeout(renderAll, 120);
+        });
+        els.reset.addEventListener("click", resetFilters);
+        els.methodsBtn.addEventListener("click", () => els.methodsDialog.showModal());
+        els.closeMethods.addEventListener("click", () => els.methodsDialog.close());
+      }
+
+      function populateFieldOptions(fields) {
+        for (const field of fields) {
+          const option = document.createElement("option");
+          option.value = field;
+          option.textContent = shortField(field);
+          els.field.appendChild(option);
+        }
+      }
+
+      function configureYearWindow([start, end]) {
+        for (const input of [els.yearStart, els.yearEnd]) {
+          input.min = String(start);
+          input.max = String(end);
+        }
+        els.yearStart.value = String(start);
+        els.yearEnd.value = String(end);
+        syncYearWindow();
+      }
+
+      function syncYearWindow(changed = null) {
+        let start = Number(els.yearStart.value);
+        let end = Number(els.yearEnd.value);
+        if (start > end) {
+          if (changed === els.yearStart) {
+            end = start;
+            els.yearEnd.value = String(end);
+          } else {
+            start = end;
+            els.yearStart.value = String(start);
           }
-          return true;
-        });
+        }
+        els.yearWindowLabel.textContent = `${start}-${end}`;
+        const [domainStart, domainEnd] = publicationDomain;
+        const span = Math.max(1, domainEnd - domainStart);
+        const startPct = ((start - domainStart) / span) * 100;
+        const endPct = ((end - domainStart) / span) * 100;
+        els.yearStart.parentElement.style.setProperty("--start", `${Math.max(0, Math.min(100, startPct))}%`);
+        els.yearStart.parentElement.style.setProperty("--end", `${Math.max(0, Math.min(100, endPct))}%`);
       }
 
-      function filteredSet(ctx = null) {
-        const base = ctx || contextSet();
-        const minB = Number(minBEl.value) || 0;
-        return base.filter((p) => {
-          if (Math.abs(p.B) < minB) return false;
-          if (bRange && (p.B < bRange[0] || p.B > bRange[1])) return false;
-          return true;
-        });
+      function currentYearRange() {
+        const start = Number(els.yearStart.value);
+        const end = Number(els.yearEnd.value);
+        return [Math.min(start, end), Math.max(start, end)];
       }
 
-      function rerenderHist(subset) {
-        histEl.classList.remove("loading");
-        // brushRange from trajectory is expressed in peak-timing (years since pub);
-        // we approximate its projection onto B by not linking directly — instead
-        // we light up the active bRange (from bar click) if present.
+      function isFullPublicationWindow() {
+        const [start, end] = currentYearRange();
+        return start === publicationDomain[0] && end === publicationDomain[1];
+      }
+
+      function filtersForContext() {
+        return {
+          modeKey: els.mode.value,
+          field: els.field.value,
+          yearRange: currentYearRange(),
+          minDelay: 0,
+          peakAge: 0,
+          delayRange: null,
+          topic: "",
+          query: "",
+        };
+      }
+
+      function currentFilters() {
+        return {
+          modeKey: els.mode.value,
+          field: els.field.value,
+          yearRange: currentYearRange(),
+          minDelay: Number(els.minDelay.value) || 0,
+          peakAge: Number(els.peakAge.value) || 0,
+          delayRange,
+          topic: topicFilter,
+          query: "",
+        };
+      }
+
+      function activeMode() {
+        return QUESTION_MODES.find((mode) => mode.key === els.mode.value) || QUESTION_MODES[0];
+      }
+
+      function renderAll() {
+        if (!papers.length) return;
+        const mode = activeMode();
+        const context = filterPapers(papers, filtersForContext());
+        const subset = filterPapers(papers, currentFilters());
+        const selectedInSubset = pinnedPaper && subset.some((paper) => paper.id === pinnedPaper.id);
+        const activeSummary = corpusSummary(subset);
+
+        syncYearWindow();
+        els.questionTitle.textContent = mode.question;
+        els.questionCopy.textContent = mode.copy;
+        els.stateLine.textContent = stateText(subset, context);
+        renderActiveFilters(selectedInSubset);
+        renderSelectionCue(selectedInSubset, subset, mode);
+        els.metrics.innerHTML = metricHtml([
+          ["Status", `${formatNumber(subset.length)} shown`],
+          ["Window", yearRangeLabel()],
+          ["Median B", formatNumber(activeSummary.medianDelay, 1)],
+          ["High-B shown", formatNumber(activeSummary.candidates)],
+          ["Corpus", formatNumber(summary.total)],
+        ]);
+
+        const fieldLensSet = filterPapers(papers, { ...currentFilters(), field: "" });
+        const topicLensSet = filterPapers(papers, { ...currentFilters(), topic: "", delayRange: null });
+        renderFieldLens(fieldLensSet);
+        renderTopicLens(topicLensSet);
+        renderSearchResults();
+        renderRankTable(subset, mode);
         renderHistogramPanel({
-          container: histEl,
+          container: els.histogram,
           papers: subset,
-          highlightedRange: brushRange && brushRange.bSpan ? brushRange.bSpan : null,
-          activeRange: bRange,
+          activeRange: delayRange,
+          selectedPaper: selectedInSubset ? pinnedPaper : null,
           onBinClick: (x0, x1) => {
-            // Toggle: clicking the same bar clears it
-            if (bRange && bRange[0] === x0 && bRange[1] === x1) bRange = null;
-            else bRange = [x0, x1];
-            rerenderAll();
+            delayRange = delayRange && delayRange[0] === x0 && delayRange[1] === x1 ? null : [x0, x1];
+            renderAll();
           },
         });
-      }
-
-      function rerenderTraj(ctx, subset) {
-        trajEl.classList.remove("loading");
         renderTrajectoryChart({
-          container: trajEl,
+          container: els.trajectory,
           papers: subset,
-          contextPapers: ctx,
-          spotlight: Number(spotEl.value),
-          selectedId: pinnedPaper?.id || null,
+          contextPapers: context,
+          spotlight: Math.max(8, Math.min(60, Number(els.spotlight.value) || 28)),
+          selectedId: selectedInSubset ? pinnedPaper.id : null,
+          modeLabel: mode.label,
+          scoreAccessor: mode.score,
           onBrush: (filtered, range) => {
-            if (!range) { brushRange = null; rerenderHist(subset); return; }
-            // Project brushed papers onto B space for histogram highlight
-            if (filtered.length === 0) { brushRange = null; rerenderHist(subset); return; }
-            const bs = filtered.map((p) => p.B);
-            brushRange = { bSpan: [Math.min(...bs), Math.max(...bs)] };
-            rerenderHist(subset);
+            if (!range) {
+              els.brushSummary.textContent =
+                "Citation paths are aligned to publication year; warmer lines carry larger Beauty score B.";
+              return;
+            }
+            els.brushSummary.textContent = `${formatNumber(filtered.length)} spotlight papers peak ${range[0].toFixed(1)}-${range[1].toFixed(1)} years after publication.`;
           },
-          onHover: (p) => { if (!pinnedPaper) updateDetail(p, false); },
-          onSelect: (p) => {
-            pinnedPaper = p;
-            updateDetail(p, !!p);
+          onSelect: (paper) => {
+            selectPaper(paper, { center: false });
           },
         });
       }
 
-      function rerenderAll() {
-        const ctx = contextSet();
-        const subset = filteredSet(ctx);
-        let statusBits = [`<b>${subset.length.toLocaleString()}</b>works in spotlight`];
-        if (bRange) statusBits.push(`B ∈ [${bRange[0].toFixed(1)}, ${bRange[1].toFixed(1)}]`);
-        statusBits.push(`ctx n = ${ctx.length.toLocaleString()}`);
-        statusEl.innerHTML = statusBits.join(" · ");
-        rerenderHist(subset);
-        rerenderTraj(ctx, subset);
-      }
-
-      // Detail card ──────────────────────────────────────────────────────
-      function updateDetail(paper, pinned) {
-        if (!paper) {
-          detailEl.className = "detail empty";
-          detailEl.innerHTML = `Hover a spotlight line to preview it here · click to pin · click a histogram bar to narrow the spotlight to that slice of B.`;
+      function renderFieldLens(subset) {
+        const rows = fieldSummaries(subset);
+        if (!rows.length) {
+          els.fieldSummary.innerHTML = '<div class="field-row"><p class="micro">No fields in scope.</p></div>';
           return;
         }
-        detailEl.className = "detail";
-        const doiHref = paper.doi || "";
-        const bClass = paper.B >= 0 ? "warm" : "cool";
-        const peakT = paper.peak_year - paper.publication_year;
-        detailEl.innerHTML = `
-          ${pinned ? '<button class="close" aria-label="close">×</button>' : ""}
-          <div>
-            ${pinned ? '<span class="pinned-tag">PINNED</span>' : ""}
-            <h3 class="dtitle">${escapeHtml(paper.title)}</h3>
-            <p class="dmeta">${escapeHtml(paper.first_author || "?")} · <em>${escapeHtml(paper.venue || "")}</em> · ${paper.publication_year}</p>
-            <p class="dfield">${escapeHtml(paper.field)} — ${escapeHtml(paper.topic || "")}</p>
-            ${doiHref ? `<a class="doi" href="${doiHref}" target="_blank" rel="noopener">${doiHref.replace("https://doi.org/","doi:")}</a>` : ""}
-            <div class="dstats">
-              <div class="stat"><span class="label">B</span><span class="val ${bClass}">${paper.B >= 0 ? "+" : ""}${paper.B.toFixed(2)}</span></div>
-              <div class="stat"><span class="label">Peak</span><span class="val">${paper.peak_year} <span style="font-size:12px;color:var(--muted);font-style:normal;letter-spacing:.08em">(t=${peakT}y)</span></span></div>
-              <div class="stat"><span class="label">Peak cites</span><span class="val">${paper.peak_citations}</span></div>
-              <div class="stat"><span class="label">Sleep</span><span class="val">${paper.sleep_duration}<span style="font-size:13px;color:var(--muted);font-style:normal;"> y</span></span></div>
-              <div class="stat"><span class="label">Total cites</span><span class="val">${paper.cited_by_count.toLocaleString()}</span></div>
-            </div>
-          </div>
-          <div>
-            <div class="spark-label">Citations per year</div>
-            <svg class="spark" id="spark"></svg>
+        const summaryHeader = `
+          <div class="field-window-summary">
+            <span class="micro">Active publication window: ${yearRangeLabel()}</span>
+            <div class="field-window-ramp" aria-hidden="true"></div>
+            <span class="micro">B scale 0-34 · median / p90</span>
+            ${selectedFieldPositionHtml()}
           </div>
         `;
-        drawSparkline(paper);
-        if (pinned) {
-          detailEl.querySelector(".close")?.addEventListener("click", () => {
-            pinnedPaper = null;
-            updateDetail(null, false);
-            // also clear selection in chart
-            rerenderTraj(contextSet(), filteredSet());
+        const rowHtml = rows
+          .map(
+            (row) => `
+              <div class="field-row ${els.field.value === row.field ? "active" : ""}">
+                <div>
+                  <p class="field-name">${escapeHtml(row.label)}</p>
+                  <div class="field-delay-track" style="--median: ${delayPercent(row.medianDelay)}%; --p90: ${delayPercent(row.p90Delay)}%" aria-hidden="true">
+                    <span class="median"></span>
+                    <span class="p90"></span>
+                  </div>
+                  <p class="micro">n=${formatNumber(row.count)} · median B=${formatNumber(row.medianDelay, 1)} · p90 B=${formatNumber(row.p90Delay, 1)} · high-B ${formatNumber(row.candidateShare * 100, 0)}%</p>
+                </div>
+                <button type="button" data-field="${escapeHtml(row.field)}">${els.field.value === row.field ? "Clear" : "Focus"}</button>
+              </div>
+            `
+          )
+          .join("");
+        els.fieldSummary.innerHTML = summaryHeader + rowHtml;
+        els.fieldSummary.querySelectorAll("button[data-field]").forEach((button) => {
+          button.addEventListener("click", () => {
+            els.field.value = els.field.value === button.dataset.field ? "" : button.dataset.field;
+            renderAll();
           });
+        });
+      }
+
+      function renderTopicLens(subset) {
+        const rows = topicSummaries(subset, 8);
+        if (!rows.length) {
+          els.topicLens.innerHTML = '<div class="topic-row"><p class="micro">No topics in scope.</p></div>';
+          return;
         }
+        els.topicLens.innerHTML = rows
+          .map(
+            (row) => `
+              <div class="topic-row ${topicFilter === row.topic ? "active" : ""}">
+                <div>
+                  <div class="topic-name" title="${escapeHtml(row.topic)}">${escapeHtml(row.topic)}</div>
+                  <p class="micro">n=${formatNumber(row.count)} · median B=${formatNumber(row.medianDelay, 1)} · ${row.fields} field${row.fields === 1 ? "" : "s"}</p>
+                </div>
+                <button type="button" data-topic="${escapeHtml(row.topic)}">${topicFilter === row.topic ? "Clear" : "Use"}</button>
+              </div>
+            `
+          )
+          .join("");
+        els.topicLens.querySelectorAll("button[data-topic]").forEach((button) => {
+          button.addEventListener("click", () => {
+            topicFilter = topicFilter === button.dataset.topic ? "" : button.dataset.topic;
+            renderAll();
+          });
+        });
       }
 
-      function drawSparkline(paper) {
-        const svgEl = detailEl.querySelector("#spark");
-        if (!svgEl) return;
-        const W = svgEl.clientWidth || 220, H = 84, M = { t: 4, r: 6, b: 18, l: 22 };
-        const entries = Object.keys(paper.counts_by_year).map(Number).sort((a,b)=>a-b).map((y)=>({y, c: paper.counts_by_year[y]}));
-        const years = entries.map((e)=>e.y);
-        if (entries.length === 0) return;
-        const xS = d3.scaleLinear().domain(d3.extent(years)).range([M.l, W - M.r]);
-        const yS = d3.scaleLinear().domain([0, d3.max(entries, (d)=>d.c) || 1]).range([H - M.b, M.t]);
-        const svg = d3.select(svgEl);
-        svg.attr("viewBox", `0 0 ${W} ${H}`);
-        const warm = paper.B >= 0 ? "#a33a1f" : "#2d4a6b";
-        const area = d3.area().x((d)=>xS(d.y)).y0(H-M.b).y1((d)=>yS(d.c)).curve(d3.curveMonotoneX);
-        svg.append("path").datum(entries).attr("d", area).attr("fill", warm).attr("fill-opacity", 0.2);
-        svg.append("path").datum(entries).attr("d", d3.line().x((d)=>xS(d.y)).y((d)=>yS(d.c)).curve(d3.curveMonotoneX)).attr("fill","none").attr("stroke", warm).attr("stroke-width",1.3);
-        // peak dot
-        svg.append("circle").attr("cx", xS(paper.peak_year)).attr("cy", yS(paper.peak_citations)).attr("r", 3).attr("fill", warm).attr("stroke","#fbf7ec").attr("stroke-width",1.2);
-        svg.append("g").attr("transform",`translate(0,${H-M.b})`).call(d3.axisBottom(xS).ticks(3).tickFormat(d3.format("d")).tickSize(3)).call((g)=>g.select(".domain").remove()).selectAll("text").style("font-family","'JetBrains Mono', monospace").style("font-size","9px").attr("fill","#7a6f5d");
+      function renderSearchResults() {
+        const query = els.search.value.trim();
+        const results = searchPapers(papers, query, 7);
+        els.searchResults.classList.toggle("open", Boolean(query));
+        if (!query) {
+          els.searchResults.innerHTML = '<button type="button" disabled>Type to search titles, authors, venues, or topics.</button>';
+          return;
+        }
+        if (!results.length) {
+          els.searchResults.innerHTML = '<button type="button" disabled>No local results.</button>';
+          return;
+        }
+        els.searchResults.innerHTML = results
+          .map(
+            (paper) => `
+              <button type="button" data-id="${escapeHtml(paper.id)}" aria-pressed="${String(pinnedPaper?.id === paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}">
+                <b>${escapeHtml(paper.title || "Untitled")}</b>
+                <span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · B=${formatNumber(paper.recognition_delay, 1)}</span>
+              </button>
+            `
+          )
+          .join("");
+        els.searchResults.querySelectorAll("button[data-id]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const found = papers.find((paper) => paper.id === button.dataset.id);
+            if (!found) return;
+            selectPaper(found, { center: true });
+          });
+        });
       }
 
-      function escapeHtml(s) {
-        return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      function renderRankTable(subset, mode) {
+        const ranked = rankPapers(subset, mode.key, subset.length);
+        const rankById = new Map(ranked.map((paper, index) => [paper.id, index + 1]));
+        const selectedRank = pinnedPaper ? rankById.get(pinnedPaper.id) : null;
+        els.rankContext.textContent = pinnedPaper
+          ? selectedRank
+            ? `Ranked by: ${mode.label}. Selected paper is #${formatNumber(selectedRank)} of ${formatNumber(subset.length)} in the active comparison.`
+            : `Ranked by: ${mode.label}. Selected paper is pinned outside the active table; its summary remains available above.`
+          : `Ranked by: ${mode.label}. Select a row to pin its Beauty score, citation peak, and mini-trajectory.`;
+        const rows = ranked.slice(0, 14);
+        if (pinnedPaper && subset.some((paper) => paper.id === pinnedPaper.id) && !rows.some((paper) => paper.id === pinnedPaper.id)) {
+          rows.pop();
+          rows.push(pinnedPaper);
+        }
+        if (!rows.length) {
+          els.rankTable.innerHTML = '<p class="panel-copy">No ranked papers in the current filter scope.</p>';
+          return;
+        }
+        els.rankTable.innerHTML = `
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th style="width:52px">Rank</th>
+                <th>Paper</th>
+                <th style="width:150px">Field</th>
+                <th style="width:76px" class="num-cell">B</th>
+                <th style="width:86px" class="num-cell">Peak age</th>
+                <th style="width:88px" class="num-cell">Peak cites</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows
+                .map(
+                  (paper, index) => `
+                    <tr tabindex="0" data-id="${escapeHtml(paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}" aria-selected="${String(pinnedPaper?.id === paper.id)}">
+                      <td class="num-cell">${rankById.get(paper.id) || index + 1}</td>
+                      <td class="title-cell"><b>${escapeHtml(paper.title || "Untitled")}</b><br><span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year}</span></td>
+                      <td>${escapeHtml(paper.field_label)}</td>
+                      <td class="num-cell">${formatNumber(paper.recognition_delay, 1)}</td>
+                      <td class="num-cell">${paper.peak_age}y</td>
+                      <td class="num-cell">${formatNumber(paper.peak_citations)}</td>
+                    </tr>
+                  `
+                )
+                .join("")}
+            </tbody>
+          </table>
+        `;
+        els.rankTable.querySelectorAll("tr[data-id]").forEach((row) => {
+          const select = () => {
+            const found = subset.find((paper) => paper.id === row.dataset.id);
+            if (!found) return;
+            selectPaper(found, { center: false });
+          };
+          row.addEventListener("click", select);
+          row.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              select();
+            }
+          });
+        });
       }
 
-      [fieldEl, minBEl, decadeEl].forEach((el) => el.addEventListener("change", () => {
-        // Changing field/decade invalidates any cross-view range filters
-        bRange = null;
-        brushRange = null;
+      function selectPaper(paper, { center = false } = {}) {
+        if (!paper || pinnedPaper?.id === paper.id) {
+          pinnedPaper = null;
+          renderAll();
+          return;
+        }
+        pinnedPaper = paper;
+        if (center) centerOnPaper(paper);
+        renderAll();
+        flashSelection();
+      }
+
+      function centerOnPaper(paper) {
+        if (!paper) return;
+        els.field.value = paper.field;
+        includePublicationYear(paper.publication_year);
+        topicFilter = "";
+        delayRange = null;
+        if ((Number(els.minDelay.value) || 0) > paper.recognition_delay) els.minDelay.value = "0";
+        if ((Number(els.peakAge.value) || 0) > paper.peak_age) els.peakAge.value = "0";
+      }
+
+      function renderActiveFilters(selectedInSubset) {
+        const chips = [];
+        if (els.field.value) chips.push(["field", `Field: ${shortField(els.field.value)}`]);
+        if (!isFullPublicationWindow()) chips.push(["yearRange", `Years: ${yearRangeLabel()}`]);
+        if (topicFilter) chips.push(["topic", `Topic: ${topicFilter}`]);
+        if (delayRange) chips.push(["delay", `Beauty B ${delayRange[0].toFixed(1)}-${delayRange[1].toFixed(1)}`]);
+        if (Number(els.minDelay.value) > 0) chips.push(["minDelay", `Min Beauty B: ${els.minDelay.value}`]);
+        if (Number(els.peakAge.value) > 0) chips.push(["peakAge", `Min peak age: ${els.peakAge.value}y`]);
+        if (pinnedPaper) chips.push(["selected", `${selectedInSubset ? "Selected" : "Selected outside filters"}: ${(pinnedPaper.title || "Untitled").slice(0, 42)}`]);
+        if (!chips.length) {
+          els.activeFilters.innerHTML = '<span class="micro">No active range, field, topic, or selected-paper constraints.</span>';
+          return;
+        }
+        els.activeFilters.innerHTML = chips
+          .map(([key, label]) => `<span class="chip"><span class="chip-label">${escapeHtml(label)}</span> <button type="button" data-clear="${key}" aria-label="Clear ${escapeHtml(label)}">x</button></span>`)
+          .join("");
+        els.activeFilters.querySelectorAll("button[data-clear]").forEach((button) => {
+          button.addEventListener("click", () => {
+            clearFilter(button.dataset.clear);
+            renderAll();
+          });
+        });
+      }
+
+      function renderSelectionCue(selectedInSubset, subset, mode) {
+        if (!pinnedPaper) {
+          els.selectionCue.hidden = true;
+          els.selectionCue.innerHTML = "";
+          return;
+        }
+        const fieldContext = selectedFieldContext();
+        const rank = selectedInSubset ? rankPosition(pinnedPaper, subset, mode.key) : null;
+        const scopeCopy = selectedInSubset
+          ? `Marked in the trajectory, distribution, table, and selected summary.`
+          : `Pinned outside the active filters; this summary stays available while the charts show the current comparison.`;
+        const rankCopy = rank ? `#${formatNumber(rank)} of ${formatNumber(subset.length)}` : "outside table";
+        els.selectionCue.hidden = false;
+        els.selectionCue.innerHTML = `
+          <div>
+            <p class="micro">Selected paper active</p>
+            <h3>${escapeHtml(pinnedPaper.title || "Untitled")}</h3>
+            <p>${escapeHtml(shortField(pinnedPaper.field))} · ${pinnedPaper.publication_year} · ${scopeCopy}</p>
+            <div class="selection-stats">
+              <div class="selection-stat"><span>Beauty B</span><strong>${formatNumber(pinnedPaper.recognition_delay, 1)}</strong></div>
+              <div class="selection-stat"><span>Peak year</span><strong>${pinnedPaper.peak_year}</strong></div>
+              <div class="selection-stat"><span>Peak age</span><strong>${pinnedPaper.peak_age}y</strong></div>
+              <div class="selection-stat"><span>Question rank</span><strong>${escapeHtml(rankCopy)}</strong></div>
+              <div class="selection-stat"><span>Field position</span><strong>${fieldContext}</strong></div>
+            </div>
+            <p class="micro">B is computed through ${COMPLETE_CITATION_YEAR}; higher B indicates a stronger delayed-recognition trajectory.</p>
+            <div class="selection-actions">
+              ${selectedInSubset ? "" : '<button type="button" data-selection-action="center">Bring into view</button>'}
+              <button type="button" data-selection-action="clear">Clear selection</button>
+            </div>
+          </div>
+          <div class="selection-spark-wrap">
+            <svg class="selection-spark" id="selectionSpark" aria-label="Selected paper annual citation trajectory"></svg>
+            <p class="micro">Annual citation trajectory</p>
+          </div>
+        `;
+        drawSelectionSparkline(pinnedPaper);
+        els.selectionCue.querySelector('[data-selection-action="center"]')?.addEventListener("click", () => {
+          centerOnPaper(pinnedPaper);
+          renderAll();
+          flashSelection();
+        });
+        els.selectionCue.querySelector('[data-selection-action="clear"]').addEventListener("click", () => {
+          pinnedPaper = null;
+          renderAll();
+        });
+      }
+
+      function clearFilter(key) {
+        if (key === "field") els.field.value = "";
+        if (key === "yearRange") configureYearWindow(publicationDomain);
+        if (key === "topic") topicFilter = "";
+        if (key === "delay") delayRange = null;
+        if (key === "minDelay") els.minDelay.value = "0";
+        if (key === "peakAge") els.peakAge.value = "0";
+        if (key === "selected") pinnedPaper = null;
+      }
+
+      function selectedFieldPositionHtml() {
+        if (!pinnedPaper) return "";
+        const fieldSet = selectedFieldWindowSet();
+        if (!fieldSet.length) return "";
+        const delays = fieldSet.map((paper) => paper.recognition_delay).sort((a, b) => a - b);
+        const median = quantile(delays, 0.5);
+        const p90 = quantile(delays, 0.9);
+        const percentile = beautyPercentile(pinnedPaper, fieldSet);
+        return `<span class="micro">Selected field position: ${escapeHtml(shortField(pinnedPaper.field))} median B=${formatNumber(median, 1)}, p90=${formatNumber(p90, 1)}, selected at p${formatNumber(percentile, 0)}.</span>`;
+      }
+
+      function selectedFieldContext() {
+        const fieldSet = selectedFieldWindowSet();
+        if (!fieldSet.length) return "n/a";
+        return `p${formatNumber(beautyPercentile(pinnedPaper, fieldSet), 0)}`;
+      }
+
+      function selectedFieldWindowSet() {
+        if (!pinnedPaper) return [];
+        return filterPapers(papers, {
+          modeKey: els.mode.value,
+          field: pinnedPaper.field,
+          yearRange: currentYearRange(),
+          minDelay: 0,
+          peakAge: 0,
+          delayRange: null,
+          topic: "",
+          query: "",
+        });
+      }
+
+      function beautyPercentile(paper, comparisonSet) {
+        if (!paper || !comparisonSet.length) return 0;
+        const atOrBelow = comparisonSet.filter((item) => item.recognition_delay <= paper.recognition_delay).length;
+        return (atOrBelow / comparisonSet.length) * 100;
+      }
+
+      function rankPosition(paper, subset, modeKey) {
+        if (!paper || !subset.some((item) => item.id === paper.id)) return null;
+        const ranked = rankPapers(subset, modeKey, subset.length);
+        const index = ranked.findIndex((item) => item.id === paper.id);
+        return index >= 0 ? index + 1 : null;
+      }
+
+      function quantile(sortedValues, q) {
+        if (!sortedValues.length) return 0;
+        const pos = (sortedValues.length - 1) * q;
+        const lo = Math.floor(pos);
+        const hi = Math.ceil(pos);
+        if (lo === hi) return sortedValues[lo];
+        return sortedValues[lo] + (sortedValues[hi] - sortedValues[lo]) * (pos - lo);
+      }
+
+      function flashSelection() {
+        if (els.selectionCue.hidden) return;
+        els.selectionCue.classList.remove("selection-flash");
+        void els.selectionCue.offsetWidth;
+        els.selectionCue.classList.add("selection-flash");
+        window.setTimeout(() => {
+          els.selectionCue.classList.remove("selection-flash");
+        }, 1000);
+      }
+
+      function drawSelectionSparkline(paper) {
+        const svgEl = els.selectionCue.querySelector("#selectionSpark");
+        drawPaperSparkline(svgEl, paper, 112);
+      }
+
+      function drawPaperSparkline(svgEl, paper, height) {
+        if (!svgEl || !paper) return;
+        const width = svgEl.clientWidth || 300;
+        const margin = { top: 8, right: 8, bottom: 22, left: 26 };
+        const entries = Object.keys(paper.counts_by_year || {})
+          .map(Number)
+          .sort((a, b) => a - b)
+          .map((year) => ({ year, count: Number(paper.counts_by_year[year] || 0) }));
+        if (!entries.length) return;
+        const x = d3.scaleLinear().domain([paper.publication_year, paper.cutoff_year]).range([margin.left, width - margin.right]);
+        const y = d3.scaleLinear().domain([0, d3.max(entries, (entry) => entry.count) || 1]).nice().range([height - margin.bottom, margin.top]);
+        const svg = d3.select(svgEl).attr("viewBox", `0 0 ${width} ${height}`);
+        svg.selectAll("*").remove();
+        const area = d3.area().x((entry) => x(entry.year)).y0(height - margin.bottom).y1((entry) => y(entry.count)).curve(d3.curveMonotoneX);
+        if (entries[0].year > paper.publication_year) {
+          svg.append("line")
+            .attr("x1", x(paper.publication_year))
+            .attr("x2", x(entries[0].year))
+            .attr("y1", y(0))
+            .attr("y2", y(0))
+            .attr("stroke", "#64706a")
+            .attr("stroke-width", 0.8)
+            .attr("stroke-dasharray", "2 4");
+        }
+        svg.append("path").datum(entries).attr("d", area).attr("fill", "#b34724").attr("fill-opacity", 0.18);
+        svg.append("path").datum(entries).attr("d", d3.line().x((entry) => x(entry.year)).y((entry) => y(entry.count)).curve(d3.curveMonotoneX)).attr("fill", "none").attr("stroke", "#b34724").attr("stroke-width", 1.5);
+        svg.append("circle").attr("cx", x(paper.peak_year)).attr("cy", y(paper.peak_citations)).attr("r", 3.5).attr("fill", "#b34724").attr("stroke", "#fff").attr("stroke-width", 1.3);
+        svg.append("g").attr("transform", `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(3).tickFormat(d3.format("d")).tickSize(3)).call((group) => group.select(".domain").remove());
+      }
+
+      function renderMethods() {
+        els.methodGrid.innerHTML = METHOD_CARDS.map(
+          (card) => `
+            <article class="method-card">
+              <h3>${escapeHtml(card.label)}</h3>
+              <p><b>Definition:</b> ${escapeHtml(card.definition)}</p>
+              <p><b>Formula:</b> ${escapeHtml(card.formula)}</p>
+              <p><b>Source:</b> ${escapeHtml(card.source)}</p>
+              <p><b>Caution:</b> ${escapeHtml(card.caution)}</p>
+            </article>
+          `
+        ).join("");
+      }
+
+      function metricHtml(items) {
+        return items
+          .map(([label, value]) => `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`)
+          .join("");
+      }
+
+      function stateText(subset, context) {
+        const parts = [
+          `${formatNumber(subset.length)} papers in the active comparison`,
+          `${formatNumber(context.length)} in field/year context`,
+        ];
+        if (delayRange) parts.push(`B in [${delayRange[0].toFixed(1)}, ${delayRange[1].toFixed(1)}]`);
+        if (topicFilter) parts.push("topic lens active");
+        if (els.search.value.trim()) parts.push("search results ready");
+        return parts.join(" · ");
+      }
+
+      function resetFilters() {
+        els.mode.value = QUESTION_MODES[0].key;
+        els.field.value = "";
+        configureYearWindow(publicationDomain);
+        els.minDelay.value = "0";
+        els.peakAge.value = "0";
+        els.spotlight.value = "28";
+        els.search.value = "";
+        delayRange = null;
+        topicFilter = "";
         pinnedPaper = null;
-        updateDetail(null, false);
-        rerenderAll();
-      }));
+        renderAll();
+      }
 
-      let spotTimer;
-      spotEl.addEventListener("input", () => {
-        spotValEl.textContent = spotEl.value;
-        clearTimeout(spotTimer);
-        spotTimer = setTimeout(() => rerenderTraj(contextSet(), filteredSet()), 80);
-      });
+      function yearRangeLabel() {
+        const [start, end] = currentYearRange();
+        return start === end ? String(start) : `${start}-${end}`;
+      }
 
-      rerenderAll();
+      function includePublicationYear(year) {
+        const value = Number(year);
+        if (!Number.isFinite(value)) return;
+        let [start, end] = currentYearRange();
+        if (value < start) start = value;
+        if (value > end) end = value;
+        els.yearStart.value = String(start);
+        els.yearEnd.value = String(end);
+        syncYearWindow();
+      }
+
+      function safeDoi(value) {
+        const text = String(value || "");
+        return text.startsWith("https://doi.org/") ? text : "";
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        }[char]));
+      }
+
+      function delayPercent(value, max = 34) {
+        return Math.max(0, Math.min(100, (Number(value || 0) / max) * 100)).toFixed(1);
+      }
     </script>
   </body>
 </html>
