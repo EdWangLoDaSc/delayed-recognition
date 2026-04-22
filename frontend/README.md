@@ -20,8 +20,8 @@ have been run first (see `../data_pipeline/README.md`).
 `renderTrajectoryChart({ container, papers, contextPapers, onBrush, onSelect, onHover, width, height, spotlight, scoreAccessor })`
 
 - Log-scale citations/year vs. publication year
-- Lines colored by corrected recognition-delay score
-- Hover/focus a line for a detail panel (title, authors, venue, delay score, peak, sleep)
+- Lines colored by Beauty score B
+- Hover/focus a line for paper metadata and peak timing
 - Brush the x-axis to inspect a `peak_age` window; `onBrush(filtered)` fires
 - Returns `{ node, setSelected(id), reset() }` for external coordination
 
@@ -41,8 +41,7 @@ at once.
 
 Pure helpers for the dashboard data contract:
 
-- recomputes a positive recognition-delay score through the last complete citation year
-- preserves raw pipeline fields such as `source_B` for auditability
+- computes Beauty score B through the last complete citation year
 - defines question-led modes, method cards, filters, search, and field summaries
 
 ## Porting into Svelte

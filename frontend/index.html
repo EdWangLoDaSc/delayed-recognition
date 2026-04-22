@@ -62,15 +62,15 @@
       .page {
         width: min(1440px, 100%);
         margin: 0 auto;
-        padding: 28px;
+        padding: 22px 28px 28px;
       }
 
       .masthead {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 28px;
-        align-items: end;
-        padding-bottom: 18px;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 430px);
+        gap: 22px;
+        align-items: start;
+        padding-bottom: 14px;
         border-bottom: 1px solid var(--ink);
       }
 
@@ -85,19 +85,25 @@
 
       h1 {
         margin: 0;
-        max-width: 780px;
+        max-width: 680px;
         font-family: var(--display);
-        font-size: clamp(34px, 5vw, 68px);
+        font-size: clamp(32px, 4vw, 54px);
         font-weight: 660;
-        line-height: 0.98;
+        line-height: 1;
         letter-spacing: 0;
       }
 
       .dek {
-        margin: 14px 0 0;
-        max-width: 760px;
+        margin: 10px 0 0;
+        max-width: 680px;
         color: var(--ink-soft);
-        font-size: clamp(15px, 1.4vw, 18px);
+        font-size: clamp(14px, 1.2vw, 16px);
+      }
+
+      .mast-side {
+        display: grid;
+        gap: 10px;
+        align-content: start;
       }
 
       .mast-actions {
@@ -119,17 +125,18 @@
       }
 
       .metrics {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 1px;
-        margin: 18px 0;
+        margin: 0;
         background: var(--rule);
         border: 1px solid var(--rule);
       }
 
       .metric {
         background: var(--surface);
-        padding: 14px 16px;
+        padding: 7px 10px;
+        flex: 1 1 128px;
         min-width: 0;
       }
 
@@ -144,9 +151,9 @@
 
       .metric strong {
         display: block;
-        margin-top: 5px;
+        margin-top: 3px;
         font-family: var(--display);
-        font-size: clamp(22px, 2.4vw, 31px);
+        font-size: clamp(16px, 1.4vw, 21px);
         line-height: 1;
         font-weight: 660;
         color: var(--ink);
@@ -157,7 +164,7 @@
         top: 0;
         z-index: 10;
         display: grid;
-        grid-template-columns: minmax(240px, 1.1fr) repeat(6, minmax(108px, 0.7fr)) minmax(150px, 0.8fr) auto;
+        grid-template-columns: minmax(250px, 1.2fr) repeat(5, minmax(108px, 0.72fr));
         gap: 12px;
         align-items: end;
         padding: 14px;
@@ -212,29 +219,98 @@
         outline-offset: 1px;
       }
 
-      .check-control {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 38px;
-        padding: 7px 9px;
-        border: 1px solid var(--rule-strong);
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .year-window {
+        position: relative;
+        height: 28px;
+        --start: 0%;
+        --end: 100%;
+      }
+
+      .year-window input[type="range"] {
+        position: absolute;
+        inset: 0;
+        height: 28px;
+        margin: 0;
+        appearance: none;
+        background: transparent;
+        pointer-events: none;
+      }
+
+      .year-window input[type="range"]::-webkit-slider-runnable-track {
+        height: 4px;
+        background: transparent;
+      }
+
+      .year-window input[type="range"]::-webkit-slider-thumb {
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        margin-top: -5.5px;
+        border: 2px solid var(--accent);
+        border-radius: 999px;
         background: var(--surface);
-        font-size: 13px;
+        box-shadow: 0 0 0 2px rgba(247, 245, 240, 0.9);
+        pointer-events: auto;
+      }
+
+      .year-window input[type="range"]::-moz-range-track {
+        height: 4px;
+        background: transparent;
+      }
+
+      .year-window input[type="range"]::-moz-range-thumb {
+        width: 13px;
+        height: 13px;
+        border: 2px solid var(--accent);
+        border-radius: 999px;
+        background: var(--surface);
+        pointer-events: auto;
+      }
+
+      .year-track {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 12px;
+        height: 4px;
+        background: var(--surface-soft);
+        border: 1px solid var(--rule);
+      }
+
+      .year-track span {
+        position: absolute;
+        top: -1px;
+        bottom: -1px;
+        left: var(--start);
+        right: calc(100% - var(--end));
+        background: linear-gradient(90deg, var(--cool), var(--accent));
+      }
+
+      .year-output {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
         color: var(--ink-soft);
       }
 
-      .check-control input { width: 16px; height: 16px; }
-
       .question-panel {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.45fr);
+        grid-template-columns: minmax(0, 1fr) minmax(230px, 320px);
         gap: 24px;
         align-items: start;
         margin: 22px 0;
         padding: 18px 0;
         border-top: 1px solid var(--rule);
         border-bottom: 1px solid var(--rule);
+      }
+
+      .question-panel > * {
+        min-width: 0;
       }
 
       .question-panel h2 {
@@ -253,9 +329,21 @@
 
       .state-line {
         font-family: var(--mono);
-        font-size: 11px;
+        font-size: 9.5px;
         letter-spacing: 0.06em;
+        line-height: 1.35;
         color: var(--muted);
+      }
+
+      .question-tools {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .search-combobox {
+        position: relative;
+        min-width: 0;
       }
 
       .workspace {
@@ -270,6 +358,10 @@
         gap: 18px;
         min-width: 0;
       }
+
+      .trajectory-panel { order: 1; }
+      .distribution-panel { order: 2; }
+      .table-panel { order: 3; }
 
       .side-stack {
         display: grid;
@@ -300,12 +392,7 @@
       }
 
       .panel .aside {
-        font-family: var(--mono);
-        font-size: 10px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--muted);
-        text-align: right;
+        display: none;
       }
 
       .panel-copy {
@@ -334,12 +421,29 @@
         background: var(--rule);
       }
 
+      .field-window-summary {
+        display: grid;
+        gap: 7px;
+        padding: 10px 14px;
+        background: var(--surface);
+      }
+
+      .field-window-ramp {
+        height: 7px;
+        background: linear-gradient(90deg, var(--cool), var(--warm));
+      }
+
       .field-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 12px;
         padding: 12px 14px;
         background: var(--surface);
+      }
+
+      .field-row.active,
+      .topic-row.active {
+        background: var(--accent-soft);
       }
 
       .field-row button {
@@ -353,22 +457,38 @@
         font-weight: 700;
       }
 
-      .field-bars {
-        display: grid;
-        gap: 5px;
-      }
-
-      .field-bar {
-        height: 7px;
+      .field-delay-track {
+        position: relative;
+        height: 9px;
+        margin: 7px 0 6px;
         background: var(--surface-soft);
-        overflow: hidden;
+        border: 1px solid var(--rule);
       }
 
-      .field-bar span {
-        display: block;
-        height: 100%;
-        width: var(--w);
-        background: linear-gradient(90deg, var(--cool), var(--warm));
+      .field-delay-track::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        width: var(--median, 0%);
+        background: color-mix(in srgb, var(--accent) 20%, transparent);
+      }
+
+      .field-delay-track .median,
+      .field-delay-track .p90 {
+        position: absolute;
+        top: -4px;
+        bottom: -4px;
+        width: 2px;
+      }
+
+      .field-delay-track .median {
+        left: var(--median, 0%);
+        background: var(--accent);
+      }
+
+      .field-delay-track .p90 {
+        left: var(--p90, 0%);
+        background: var(--warm);
       }
 
       .micro {
@@ -378,113 +498,206 @@
         color: var(--muted);
       }
 
-      .detail {
-        padding: 16px;
+      .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+        min-width: 0;
       }
 
-      .detail.empty {
-        color: var(--muted);
-        min-height: 180px;
+      .selection-cue {
         display: grid;
-        place-items: center;
-        text-align: center;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
+        gap: 14px;
+        align-items: center;
+        margin-top: 14px;
+        padding: 12px 14px;
+        border: 1px solid var(--accent);
+        border-left-width: 4px;
+        background: linear-gradient(90deg, rgba(220, 233, 223, 0.92), rgba(255, 255, 255, 0.82));
+      }
+
+      .selection-cue[hidden] {
+        display: none;
+      }
+
+      .selection-cue h3 {
+        margin: 0 0 4px;
         font-family: var(--display);
         font-size: 18px;
-      }
-
-      .detail h3 {
-        font-family: var(--display);
-        font-size: 23px;
-        line-height: 1.18;
-        margin: 0 0 8px;
+        line-height: 1.08;
         letter-spacing: 0;
       }
 
-      .detail p {
-        margin: 0 0 8px;
+      .selection-cue p {
+        margin: 0;
         color: var(--ink-soft);
-        font-size: 13px;
+        font-size: 12px;
       }
 
-      .detail .tag {
-        display: inline-flex;
-        align-items: center;
-        min-height: 24px;
-        padding: 0 7px;
-        margin: 0 0 10px;
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-family: var(--mono);
-        font-size: 10px;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .detail .close {
-        float: right;
-        min-height: 28px;
-        padding: 0 8px;
-        border-color: var(--rule);
-      }
-
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .selection-stats {
+        display: flex;
+        flex-wrap: wrap;
         gap: 1px;
-        margin: 12px 0;
+        margin-top: 9px;
         background: var(--rule);
       }
 
-      .stat {
+      .selection-stat {
+        min-width: 94px;
+        flex: 1 1 94px;
+        padding: 7px 8px;
         background: var(--surface);
-        padding: 9px;
       }
 
-      .stat span {
+      .selection-stat span {
         display: block;
         font-family: var(--mono);
-        font-size: 9px;
+        font-size: 8.5px;
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--muted);
       }
 
-      .stat strong {
+      .selection-stat strong {
         display: block;
-        margin-top: 3px;
-        font-size: 17px;
-        font-weight: 700;
-        color: var(--ink);
+        margin-top: 2px;
+        font-size: 15px;
       }
 
-      .doi {
-        color: var(--accent);
-        text-decoration: none;
-        border-bottom: 1px dotted var(--accent);
-        overflow-wrap: anywhere;
-      }
-
-      .spark {
-        width: 100%;
-        height: 96px;
-        display: block;
+      .selection-actions {
+        display: flex;
+        justify-content: flex-end;
         margin-top: 8px;
       }
 
-      .search-results {
+      .selection-actions button {
+        min-height: 30px;
+        padding: 0 9px;
+        font-size: 12px;
+      }
+
+      .selection-spark-wrap {
+        min-width: 0;
+      }
+
+      .selection-spark {
+        width: 100%;
+        height: 112px;
+        display: block;
+        background: rgba(255, 255, 255, 0.54);
+        border-left: 1px solid var(--rule);
+      }
+
+      .selection-flash {
+        animation: selectionPulse 950ms ease-out;
+      }
+
+      @keyframes selectionPulse {
+        0% { box-shadow: 0 0 0 0 rgba(45, 107, 85, 0.34); }
+        100% { box-shadow: 0 0 0 14px rgba(45, 107, 85, 0); }
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        min-height: 30px;
+        padding: 0 9px;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .chip-label {
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .chip button {
+        flex: 0 0 auto;
+        min-height: 20px;
+        padding: 0 5px;
+        border: 0;
+        background: transparent;
+        color: var(--accent);
+      }
+
+      .topic-list {
         display: grid;
         gap: 1px;
         background: var(--rule);
+      }
+
+      .topic-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 12px;
+        background: var(--surface);
+      }
+
+      .topic-row button {
+        min-height: 30px;
+        padding: 0 8px;
+        font-size: 12px;
+      }
+
+      .topic-name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-weight: 700;
+      }
+
+      .search-results {
+        display: none;
+        gap: 1px;
+        background: var(--rule);
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 30;
+        border: 1px solid var(--rule-strong);
+        box-shadow: 0 14px 28px rgba(23, 32, 28, 0.14);
+        max-width: 100%;
+        max-height: 360px;
+        overflow: auto;
+      }
+
+      .search-results.open {
+        display: grid;
+      }
+
+      .search-box {
+        min-width: 0;
       }
 
       .search-results button {
         display: block;
         width: 100%;
+        max-width: 100%;
         min-height: 0;
         padding: 10px 12px;
         border: 0;
         background: var(--surface);
         text-align: left;
+        overflow: hidden;
+      }
+
+      .search-results button.selected {
+        background: var(--accent-soft);
+        box-shadow: inset 3px 0 0 var(--accent);
       }
 
       .search-results b {
@@ -541,7 +754,19 @@
         outline: 0;
       }
 
+      .rank-table tbody tr.selected {
+        background: #dce9df;
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+
       .rank-table .title-cell {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .rank-table .title-cell b {
+        display: block;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -657,7 +882,7 @@
       }
 
       @media (max-width: 820px) {
-        .page { padding: 18px; }
+        .page { width: 100%; max-width: 100%; padding: 18px; }
         .masthead, .question-panel, .metrics, .side-stack, .method-grid {
           grid-template-columns: 1fr;
         }
@@ -668,8 +893,42 @@
           position: static;
           grid-template-columns: 1fr;
         }
+        .selection-cue {
+          grid-template-columns: 1fr;
+        }
+        .selection-actions {
+          justify-content: stretch;
+        }
+        .selection-actions button {
+          width: 100%;
+        }
+        .search-results {
+          position: static;
+          margin-top: 6px;
+          max-height: none;
+          box-shadow: none;
+        }
         footer {
           flex-direction: column;
+        }
+        .rank-table {
+          min-width: 0;
+        }
+        .rank-table th:nth-child(1),
+        .rank-table td:nth-child(1) {
+          width: 46px !important;
+        }
+        .rank-table th:nth-child(3),
+        .rank-table td:nth-child(3),
+        .rank-table th:nth-child(5),
+        .rank-table td:nth-child(5),
+        .rank-table th:nth-child(6),
+        .rank-table td:nth-child(6) {
+          display: none;
+        }
+        .rank-table th:nth-child(4),
+        .rank-table td:nth-child(4) {
+          width: 62px !important;
         }
       }
     </style>
@@ -678,27 +937,27 @@
     <main class="page">
       <header class="masthead">
         <div>
-          <p class="eyebrow">DATA 31500 · OpenAlex · D3 static atlas</p>
-          <h1>Delayed Recognition Atlas</h1>
+          <p class="eyebrow">OpenAlex citation data · 1990-2010</p>
+          <h1>Delayed Recognition</h1>
           <p class="dek">
-            A browser-based instrument for comparing citation-delay patterns across computer
-            science, physics, and molecular biology. The dashboard ranks papers by a corrected
-            recognition-delay score recomputed through the last complete citation year.
+            Computer science, physics, and molecular biology papers scored by
+            Van Raan-style Beauty score B through the last complete citation year.
           </p>
         </div>
-        <div class="mast-actions">
-          <button class="primary-button" id="methodsBtn" type="button">Methods</button>
-          <button class="ghost-button" id="resetBtn" type="button">Reset</button>
+        <div class="mast-side">
+          <div class="mast-actions">
+            <button class="primary-button" id="methodsBtn" type="button">Methods</button>
+            <button class="ghost-button" id="resetBtn" type="button">Reset</button>
+          </div>
+          <section class="metrics" id="metrics" aria-label="Corpus summary">
+            <div class="metric"><span>Status</span><strong>Loading</strong></div>
+            <div class="metric"><span>Corpus</span><strong>-</strong></div>
+            <div class="metric"><span>Median B</span><strong>-</strong></div>
+            <div class="metric"><span>High-B papers</span><strong>-</strong></div>
+            <div class="metric"><span>Citation cutoff</span><strong>-</strong></div>
+          </section>
         </div>
       </header>
-
-      <section class="metrics" id="metrics" aria-label="Corpus summary">
-        <div class="metric"><span>Status</span><strong>Loading</strong></div>
-        <div class="metric"><span>Corpus</span><strong>-</strong></div>
-        <div class="metric"><span>Median D</span><strong>-</strong></div>
-        <div class="metric"><span>High-delay candidates</span><strong>-</strong></div>
-        <div class="metric"><span>Citation cutoff</span><strong>-</strong></div>
-      </section>
 
       <section class="control-dock" aria-label="Dashboard controls">
         <label class="control">
@@ -710,15 +969,16 @@
           <select id="field"><option value="">All fields</option></select>
         </label>
         <label class="control">
-          <span>Publication decade</span>
-          <select id="decade">
-            <option value="">1990-2010</option>
-            <option value="1990">1990-1999</option>
-            <option value="2000">2000-2010</option>
-          </select>
+          <span>Publication window</span>
+          <div class="year-window">
+            <div class="year-track" aria-hidden="true"><span></span></div>
+            <input id="yearStart" type="range" min="1990" max="2010" step="1" value="1990" aria-label="Publication window start" />
+            <input id="yearEnd" type="range" min="1990" max="2010" step="1" value="2010" aria-label="Publication window end" />
+          </div>
+          <output id="yearWindowLabel" class="year-output">1990-2010</output>
         </label>
         <label class="control">
-          <span>Min delay D</span>
+          <span>Min Beauty B</span>
           <input id="minDelay" type="number" min="0" max="40" step="1" value="0" />
         </label>
         <label class="control">
@@ -729,14 +989,6 @@
           <span>Spotlight lines</span>
           <input id="spotlight" type="number" min="8" max="60" step="2" value="28" />
         </label>
-        <label class="control">
-          <span>Search local corpus</span>
-          <input id="search" type="search" placeholder="Title, author, venue, topic" />
-        </label>
-        <label class="check-control">
-          <input id="modeOnly" type="checkbox" checked />
-          Use question scope
-        </label>
       </section>
 
       <section class="question-panel" aria-live="polite">
@@ -744,44 +996,52 @@
           <p class="eyebrow">Current question</p>
           <h2 id="questionTitle">-</h2>
           <p id="questionCopy">-</p>
+          <div id="selectionCue" class="selection-cue" hidden></div>
+          <div class="active-filters" id="activeFilters"></div>
         </div>
-        <p class="state-line" id="stateLine">Fetching data.</p>
+        <div class="question-tools">
+          <p class="state-line" id="stateLine">Fetching data.</p>
+          <div class="search-combobox">
+            <label class="control search-box">
+              <span>Find a paper</span>
+              <input id="search" type="search" placeholder="Title, author, venue, topic" aria-controls="searchResults" />
+            </label>
+            <div id="searchResults" class="search-results"></div>
+          </div>
+        </div>
       </section>
 
       <section class="workspace">
         <div class="main-stack">
-          <section class="panel">
+          <section class="panel distribution-panel">
             <div class="panel-head">
-              <h3>Distribution of Recognition Delay</h3>
-              <span class="aside">Linked range filter</span>
+              <h3>Beauty Score Distribution</h3>
             </div>
             <p class="panel-copy">
-              Bar height is paper count. Click a bar to filter the same recognition-delay
-              score used by the trajectory spotlight.
+              Bar height is paper count. Click a bar to filter Beauty score B
+              used by the trajectory spotlight.
             </p>
             <div class="chart-pad"><div id="histogram" class="empty-chart">Loading distribution.</div></div>
           </section>
 
-          <section class="panel">
+          <section class="panel trajectory-panel">
             <div class="panel-head">
               <h3>Trajectories in Time</h3>
               <span class="aside">Context plus spotlight</span>
             </div>
             <p class="panel-copy" id="brushSummary">
-              Brush the x-axis to inspect spotlight papers by peak age. The brush does not
-              redraw the histogram because the histogram encodes recognition-delay score, not peak age.
+              Citation paths are aligned to publication year; warmer lines carry larger Beauty score B.
             </p>
             <div class="chart-pad"><div id="trajectory" class="empty-chart">Loading trajectories.</div></div>
           </section>
 
-          <section class="panel">
+          <section class="panel table-panel">
             <div class="panel-head">
               <h3>Ranked Papers</h3>
-              <span class="aside">Filtered table</span>
             </div>
-            <p class="panel-copy">
+            <p class="panel-copy" id="rankContext">
               The table uses the active analytical question and the same filters as the charts.
-              Select a row to pin the paper in the detail panel.
+              Select a row to pin its Beauty score, peak timing, and mini-trajectory.
             </p>
             <div id="rankTable"></div>
           </section>
@@ -791,27 +1051,15 @@
           <section class="panel">
             <div class="panel-head">
               <h3>Field Lens</h3>
-              <span class="aside">Filtered set</span>
             </div>
             <div class="field-summary" id="fieldSummary"></div>
           </section>
 
           <section class="panel">
             <div class="panel-head">
-              <h3>Selected Paper</h3>
-              <span class="aside">Detail on demand</span>
+              <h3>Topic Lens</h3>
             </div>
-            <div id="detail" class="detail empty">
-              Hover or focus a spotlight line to preview it here. Click a line to pin it.
-            </div>
-          </section>
-
-          <section class="panel">
-            <div class="panel-head">
-              <h3>Search Results</h3>
-              <span class="aside">Local corpus</span>
-            </div>
-            <div id="searchResults" class="search-results"></div>
+            <div class="topic-list" id="topicLens"></div>
           </section>
 
           <div class="notice">
@@ -823,7 +1071,7 @@
 
       <footer>
         <span>Source: OpenAlex Works API</span>
-        <span>Metric: Van Raan-style Beauty Coefficient, recomputed through 2025</span>
+        <span>Metric: Beauty score B, computed through 2025</span>
         <span>Kaboski · Amar · Wang · Yadav</span>
       </footer>
     </main>
@@ -859,23 +1107,24 @@
         fieldSummaries,
         filterPapers,
         formatNumber,
-        formatSigned,
         normalizeCorpus,
         rankPapers,
         searchPapers,
         shortField,
+        topicSummaries,
       } from "./src/analysis.js";
 
       const els = {
         metrics: document.getElementById("metrics"),
         mode: document.getElementById("mode"),
         field: document.getElementById("field"),
-        decade: document.getElementById("decade"),
+        yearStart: document.getElementById("yearStart"),
+        yearEnd: document.getElementById("yearEnd"),
+        yearWindowLabel: document.getElementById("yearWindowLabel"),
         minDelay: document.getElementById("minDelay"),
         peakAge: document.getElementById("peakAge"),
         spotlight: document.getElementById("spotlight"),
         search: document.getElementById("search"),
-        modeOnly: document.getElementById("modeOnly"),
         reset: document.getElementById("resetBtn"),
         methodsBtn: document.getElementById("methodsBtn"),
         methodsDialog: document.getElementById("methodsDialog"),
@@ -883,21 +1132,26 @@
         methodGrid: document.getElementById("methodGrid"),
         questionTitle: document.getElementById("questionTitle"),
         questionCopy: document.getElementById("questionCopy"),
+        activeFilters: document.getElementById("activeFilters"),
+        selectionCue: document.getElementById("selectionCue"),
         stateLine: document.getElementById("stateLine"),
         histogram: document.getElementById("histogram"),
         trajectory: document.getElementById("trajectory"),
-        detail: document.getElementById("detail"),
         fieldSummary: document.getElementById("fieldSummary"),
+        topicLens: document.getElementById("topicLens"),
         searchResults: document.getElementById("searchResults"),
         rankTable: document.getElementById("rankTable"),
+        rankContext: document.getElementById("rankContext"),
         brushSummary: document.getElementById("brushSummary"),
       };
 
       let papers = [];
       let summary = null;
       let delayRange = null;
+      let topicFilter = "";
       let pinnedPaper = null;
       let searchTimer = null;
+      let publicationDomain = [1990, 2010];
 
       initControls();
       renderMethods();
@@ -911,6 +1165,8 @@
           const normalized = normalizeCorpus(raw);
           papers = normalized.papers;
           summary = corpusSummary(papers);
+          publicationDomain = [summary.firstPublication || 1990, summary.lastPublication || 2010];
+          configureYearWindow(publicationDomain);
           populateFieldOptions(summary.fields);
           renderAll();
         } catch (error) {
@@ -919,8 +1175,8 @@
           els.metrics.innerHTML = metricHtml([
             ["Status", "Data error"],
             ["Corpus", "-"],
-            ["Median D", "-"],
-            ["High-delay candidates", "-"],
+            ["Median B", "-"],
+            ["High-B papers", "-"],
             ["Citation cutoff", COMPLETE_CITATION_YEAR],
           ]);
           console.error(error);
@@ -937,11 +1193,18 @@
 
         els.mode.addEventListener("change", () => {
           delayRange = null;
+          topicFilter = "";
           renderAll();
         });
-        [els.field, els.decade, els.minDelay, els.peakAge, els.spotlight, els.modeOnly].forEach((el) =>
+        [els.field, els.minDelay, els.peakAge, els.spotlight].forEach((el) =>
           el.addEventListener("change", renderAll)
         );
+        [els.yearStart, els.yearEnd].forEach((el) => {
+          el.addEventListener("input", () => {
+            syncYearWindow(el);
+            renderAll();
+          });
+        });
         els.search.addEventListener("input", () => {
           window.clearTimeout(searchTimer);
           searchTimer = window.setTimeout(renderAll, 120);
@@ -960,15 +1223,57 @@
         }
       }
 
+      function configureYearWindow([start, end]) {
+        for (const input of [els.yearStart, els.yearEnd]) {
+          input.min = String(start);
+          input.max = String(end);
+        }
+        els.yearStart.value = String(start);
+        els.yearEnd.value = String(end);
+        syncYearWindow();
+      }
+
+      function syncYearWindow(changed = null) {
+        let start = Number(els.yearStart.value);
+        let end = Number(els.yearEnd.value);
+        if (start > end) {
+          if (changed === els.yearStart) {
+            end = start;
+            els.yearEnd.value = String(end);
+          } else {
+            start = end;
+            els.yearStart.value = String(start);
+          }
+        }
+        els.yearWindowLabel.textContent = `${start}-${end}`;
+        const [domainStart, domainEnd] = publicationDomain;
+        const span = Math.max(1, domainEnd - domainStart);
+        const startPct = ((start - domainStart) / span) * 100;
+        const endPct = ((end - domainStart) / span) * 100;
+        els.yearStart.parentElement.style.setProperty("--start", `${Math.max(0, Math.min(100, startPct))}%`);
+        els.yearStart.parentElement.style.setProperty("--end", `${Math.max(0, Math.min(100, endPct))}%`);
+      }
+
+      function currentYearRange() {
+        const start = Number(els.yearStart.value);
+        const end = Number(els.yearEnd.value);
+        return [Math.min(start, end), Math.max(start, end)];
+      }
+
+      function isFullPublicationWindow() {
+        const [start, end] = currentYearRange();
+        return start === publicationDomain[0] && end === publicationDomain[1];
+      }
+
       function filtersForContext() {
         return {
           modeKey: els.mode.value,
           field: els.field.value,
-          decade: els.decade.value,
+          yearRange: currentYearRange(),
           minDelay: 0,
           peakAge: 0,
           delayRange: null,
-          modeOnly: false,
+          topic: "",
           query: "",
         };
       }
@@ -977,12 +1282,12 @@
         return {
           modeKey: els.mode.value,
           field: els.field.value,
-          decade: els.decade.value,
+          yearRange: currentYearRange(),
           minDelay: Number(els.minDelay.value) || 0,
           peakAge: Number(els.peakAge.value) || 0,
           delayRange,
-          modeOnly: els.modeOnly.checked,
-          query: els.search.value.trim(),
+          topic: topicFilter,
+          query: "",
         };
       }
 
@@ -995,26 +1300,34 @@
         const mode = activeMode();
         const context = filterPapers(papers, filtersForContext());
         const subset = filterPapers(papers, currentFilters());
-        pinnedPaper = resolvePinned(subset);
+        const selectedInSubset = pinnedPaper && subset.some((paper) => paper.id === pinnedPaper.id);
+        const activeSummary = corpusSummary(subset);
 
+        syncYearWindow();
         els.questionTitle.textContent = mode.question;
         els.questionCopy.textContent = mode.copy;
         els.stateLine.textContent = stateText(subset, context);
+        renderActiveFilters(selectedInSubset);
+        renderSelectionCue(selectedInSubset, subset, mode);
         els.metrics.innerHTML = metricHtml([
           ["Status", `${formatNumber(subset.length)} shown`],
+          ["Window", yearRangeLabel()],
+          ["Median B", formatNumber(activeSummary.medianDelay, 1)],
+          ["High-B shown", formatNumber(activeSummary.candidates)],
           ["Corpus", formatNumber(summary.total)],
-          ["Median D", formatNumber(summary.medianDelay, 1)],
-          ["High-delay candidates", formatNumber(summary.candidates)],
-          ["Citation cutoff", summary.lastObserved || COMPLETE_CITATION_YEAR],
         ]);
 
-        renderFieldLens(subset);
+        const fieldLensSet = filterPapers(papers, { ...currentFilters(), field: "" });
+        const topicLensSet = filterPapers(papers, { ...currentFilters(), topic: "", delayRange: null });
+        renderFieldLens(fieldLensSet);
+        renderTopicLens(topicLensSet);
         renderSearchResults();
         renderRankTable(subset, mode);
         renderHistogramPanel({
           container: els.histogram,
           papers: subset,
           activeRange: delayRange,
+          selectedPaper: selectedInSubset ? pinnedPaper : null,
           onBinClick: (x0, x1) => {
             delayRange = delayRange && delayRange[0] === x0 && delayRange[1] === x1 ? null : [x0, x1];
             renderAll();
@@ -1025,27 +1338,21 @@
           papers: subset,
           contextPapers: context,
           spotlight: Math.max(8, Math.min(60, Number(els.spotlight.value) || 28)),
-          selectedId: pinnedPaper?.id || null,
+          selectedId: selectedInSubset ? pinnedPaper.id : null,
           modeLabel: mode.label,
           scoreAccessor: mode.score,
           onBrush: (filtered, range) => {
             if (!range) {
               els.brushSummary.textContent =
-                "Brush the x-axis to inspect spotlight papers by peak age. The brush does not redraw the histogram because the histogram encodes recognition-delay score, not peak age.";
+                "Citation paths are aligned to publication year; warmer lines carry larger Beauty score B.";
               return;
             }
-            els.brushSummary.textContent = `${formatNumber(filtered.length)} filtered papers peak between ${range[0].toFixed(1)} and ${range[1].toFixed(1)} years after publication.`;
-          },
-          onHover: (paper) => {
-            if (!pinnedPaper) updateDetail(paper, false);
+            els.brushSummary.textContent = `${formatNumber(filtered.length)} spotlight papers peak ${range[0].toFixed(1)}-${range[1].toFixed(1)} years after publication.`;
           },
           onSelect: (paper) => {
-            pinnedPaper = paper;
-            updateDetail(paper, Boolean(paper));
+            selectPaper(paper, { center: false });
           },
         });
-
-        updateDetail(pinnedPaper, Boolean(pinnedPaper));
       }
 
       function renderFieldLens(subset) {
@@ -1054,34 +1361,72 @@
           els.fieldSummary.innerHTML = '<div class="field-row"><p class="micro">No fields in scope.</p></div>';
           return;
         }
-        const maxP90 = Math.max(...rows.map((row) => row.p90Delay), 1);
-        els.fieldSummary.innerHTML = rows
+        const summaryHeader = `
+          <div class="field-window-summary">
+            <span class="micro">Active publication window: ${yearRangeLabel()}</span>
+            <div class="field-window-ramp" aria-hidden="true"></div>
+            <span class="micro">B scale 0-34 · median / p90</span>
+            ${selectedFieldPositionHtml()}
+          </div>
+        `;
+        const rowHtml = rows
           .map(
             (row) => `
-              <div class="field-row">
+              <div class="field-row ${els.field.value === row.field ? "active" : ""}">
                 <div>
                   <p class="field-name">${escapeHtml(row.label)}</p>
-                  <div class="field-bars" aria-hidden="true">
-                    <div class="field-bar"><span style="--w:${Math.max(2, (row.p90Delay / maxP90) * 100).toFixed(1)}%"></span></div>
+                  <div class="field-delay-track" style="--median: ${delayPercent(row.medianDelay)}%; --p90: ${delayPercent(row.p90Delay)}%" aria-hidden="true">
+                    <span class="median"></span>
+                    <span class="p90"></span>
                   </div>
-                  <p class="micro">n=${formatNumber(row.count)} · median D=${formatNumber(row.medianDelay, 1)} · p90 D=${formatNumber(row.p90Delay, 1)}</p>
+                  <p class="micro">n=${formatNumber(row.count)} · median B=${formatNumber(row.medianDelay, 1)} · p90 B=${formatNumber(row.p90Delay, 1)} · high-B ${formatNumber(row.candidateShare * 100, 0)}%</p>
                 </div>
-                <button type="button" data-field="${escapeHtml(row.field)}">Focus</button>
+                <button type="button" data-field="${escapeHtml(row.field)}">${els.field.value === row.field ? "Clear" : "Focus"}</button>
               </div>
             `
           )
           .join("");
+        els.fieldSummary.innerHTML = summaryHeader + rowHtml;
         els.fieldSummary.querySelectorAll("button[data-field]").forEach((button) => {
           button.addEventListener("click", () => {
-            els.field.value = button.dataset.field;
+            els.field.value = els.field.value === button.dataset.field ? "" : button.dataset.field;
+            renderAll();
+          });
+        });
+      }
+
+      function renderTopicLens(subset) {
+        const rows = topicSummaries(subset, 8);
+        if (!rows.length) {
+          els.topicLens.innerHTML = '<div class="topic-row"><p class="micro">No topics in scope.</p></div>';
+          return;
+        }
+        els.topicLens.innerHTML = rows
+          .map(
+            (row) => `
+              <div class="topic-row ${topicFilter === row.topic ? "active" : ""}">
+                <div>
+                  <div class="topic-name" title="${escapeHtml(row.topic)}">${escapeHtml(row.topic)}</div>
+                  <p class="micro">n=${formatNumber(row.count)} · median B=${formatNumber(row.medianDelay, 1)} · ${row.fields} field${row.fields === 1 ? "" : "s"}</p>
+                </div>
+                <button type="button" data-topic="${escapeHtml(row.topic)}">${topicFilter === row.topic ? "Clear" : "Use"}</button>
+              </div>
+            `
+          )
+          .join("");
+        els.topicLens.querySelectorAll("button[data-topic]").forEach((button) => {
+          button.addEventListener("click", () => {
+            topicFilter = topicFilter === button.dataset.topic ? "" : button.dataset.topic;
             renderAll();
           });
         });
       }
 
       function renderSearchResults() {
-        const results = searchPapers(papers, els.search.value, 7);
-        if (!els.search.value.trim()) {
+        const query = els.search.value.trim();
+        const results = searchPapers(papers, query, 7);
+        els.searchResults.classList.toggle("open", Boolean(query));
+        if (!query) {
           els.searchResults.innerHTML = '<button type="button" disabled>Type to search titles, authors, venues, or topics.</button>';
           return;
         }
@@ -1092,9 +1437,9 @@
         els.searchResults.innerHTML = results
           .map(
             (paper) => `
-              <button type="button" data-id="${escapeHtml(paper.id)}">
+              <button type="button" data-id="${escapeHtml(paper.id)}" aria-pressed="${String(pinnedPaper?.id === paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}">
                 <b>${escapeHtml(paper.title || "Untitled")}</b>
-                <span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · D=${formatNumber(paper.recognition_delay, 1)}</span>
+                <span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · B=${formatNumber(paper.recognition_delay, 1)}</span>
               </button>
             `
           )
@@ -1103,16 +1448,25 @@
           button.addEventListener("click", () => {
             const found = papers.find((paper) => paper.id === button.dataset.id);
             if (!found) return;
-            pinnedPaper = found;
-            els.field.value = found.field;
-            els.search.value = found.title || found.first_author || "";
-            renderAll();
+            selectPaper(found, { center: true });
           });
         });
       }
 
       function renderRankTable(subset, mode) {
-        const rows = rankPapers(subset, mode.key, 14);
+        const ranked = rankPapers(subset, mode.key, subset.length);
+        const rankById = new Map(ranked.map((paper, index) => [paper.id, index + 1]));
+        const selectedRank = pinnedPaper ? rankById.get(pinnedPaper.id) : null;
+        els.rankContext.textContent = pinnedPaper
+          ? selectedRank
+            ? `Ranked by: ${mode.label}. Selected paper is #${formatNumber(selectedRank)} of ${formatNumber(subset.length)} in the active comparison.`
+            : `Ranked by: ${mode.label}. Selected paper is pinned outside the active table; its summary remains available above.`
+          : `Ranked by: ${mode.label}. Select a row to pin its Beauty score, citation peak, and mini-trajectory.`;
+        const rows = ranked.slice(0, 14);
+        if (pinnedPaper && subset.some((paper) => paper.id === pinnedPaper.id) && !rows.some((paper) => paper.id === pinnedPaper.id)) {
+          rows.pop();
+          rows.push(pinnedPaper);
+        }
         if (!rows.length) {
           els.rankTable.innerHTML = '<p class="panel-copy">No ranked papers in the current filter scope.</p>';
           return;
@@ -1124,7 +1478,7 @@
                 <th style="width:52px">Rank</th>
                 <th>Paper</th>
                 <th style="width:150px">Field</th>
-                <th style="width:76px" class="num-cell">D</th>
+                <th style="width:76px" class="num-cell">B</th>
                 <th style="width:86px" class="num-cell">Peak age</th>
                 <th style="width:88px" class="num-cell">Peak cites</th>
               </tr>
@@ -1133,8 +1487,8 @@
               ${rows
                 .map(
                   (paper, index) => `
-                    <tr tabindex="0" data-id="${escapeHtml(paper.id)}">
-                      <td class="num-cell">${index + 1}</td>
+                    <tr tabindex="0" data-id="${escapeHtml(paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}" aria-selected="${String(pinnedPaper?.id === paper.id)}">
+                      <td class="num-cell">${rankById.get(paper.id) || index + 1}</td>
                       <td class="title-cell"><b>${escapeHtml(paper.title || "Untitled")}</b><br><span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year}</span></td>
                       <td>${escapeHtml(paper.field_label)}</td>
                       <td class="num-cell">${formatNumber(paper.recognition_delay, 1)}</td>
@@ -1151,8 +1505,7 @@
           const select = () => {
             const found = subset.find((paper) => paper.id === row.dataset.id);
             if (!found) return;
-            pinnedPaper = found;
-            updateDetail(found, true);
+            selectPaper(found, { center: false });
           };
           row.addEventListener("click", select);
           row.addEventListener("keydown", (event) => {
@@ -1164,44 +1517,181 @@
         });
       }
 
-      function updateDetail(paper, pinned) {
-        if (!paper) {
-          els.detail.className = "detail empty";
-          els.detail.textContent = "Hover or focus a spotlight line to preview it here. Click a line to pin it.";
+      function selectPaper(paper, { center = false } = {}) {
+        if (!paper || pinnedPaper?.id === paper.id) {
+          pinnedPaper = null;
+          renderAll();
           return;
         }
-        els.detail.className = "detail";
-        const doi = safeDoi(paper.doi);
-        els.detail.innerHTML = `
-          ${pinned ? '<button class="close" type="button" aria-label="Clear selected paper">Clear</button>' : ""}
-          <span class="tag">${pinned ? "Pinned" : "Preview"}</span>
-          <h3>${escapeHtml(paper.title || "Untitled")}</h3>
-          <p>${escapeHtml(paper.first_author || "Unknown author")} · ${escapeHtml(paper.venue || "Unknown venue")} · ${paper.publication_year}</p>
-          <p>${escapeHtml(paper.field_label)} · ${escapeHtml(paper.topic || "No topic label")}</p>
-          ${doi ? `<p><a class="doi" href="${doi}" target="_blank" rel="noopener">${escapeHtml(doi.replace("https://doi.org/", "doi:"))}</a></p>` : ""}
-          <div class="stats-grid">
-            <div class="stat"><span>Delay D</span><strong>${formatNumber(paper.recognition_delay, 2)}</strong></div>
-            <div class="stat"><span>Source B</span><strong>${formatSigned(paper.source_B, 2)}</strong></div>
-            <div class="stat"><span>Peak</span><strong>${paper.peak_year} (${paper.peak_age}y)</strong></div>
-            <div class="stat"><span>Peak cites</span><strong>${formatNumber(paper.peak_citations)}</strong></div>
-            <div class="stat"><span>Heuristic sleep</span><strong>${paper.sleep_duration}y</strong></div>
-            <div class="stat"><span>Total cites</span><strong>${formatNumber(paper.cited_by_count)}</strong></div>
+        pinnedPaper = paper;
+        if (center) centerOnPaper(paper);
+        renderAll();
+        flashSelection();
+      }
+
+      function centerOnPaper(paper) {
+        if (!paper) return;
+        els.field.value = paper.field;
+        includePublicationYear(paper.publication_year);
+        topicFilter = "";
+        delayRange = null;
+        if ((Number(els.minDelay.value) || 0) > paper.recognition_delay) els.minDelay.value = "0";
+        if ((Number(els.peakAge.value) || 0) > paper.peak_age) els.peakAge.value = "0";
+      }
+
+      function renderActiveFilters(selectedInSubset) {
+        const chips = [];
+        if (els.field.value) chips.push(["field", `Field: ${shortField(els.field.value)}`]);
+        if (!isFullPublicationWindow()) chips.push(["yearRange", `Years: ${yearRangeLabel()}`]);
+        if (topicFilter) chips.push(["topic", `Topic: ${topicFilter}`]);
+        if (delayRange) chips.push(["delay", `Beauty B ${delayRange[0].toFixed(1)}-${delayRange[1].toFixed(1)}`]);
+        if (Number(els.minDelay.value) > 0) chips.push(["minDelay", `Min Beauty B: ${els.minDelay.value}`]);
+        if (Number(els.peakAge.value) > 0) chips.push(["peakAge", `Min peak age: ${els.peakAge.value}y`]);
+        if (pinnedPaper) chips.push(["selected", `${selectedInSubset ? "Selected" : "Selected outside filters"}: ${(pinnedPaper.title || "Untitled").slice(0, 42)}`]);
+        if (!chips.length) {
+          els.activeFilters.innerHTML = '<span class="micro">No active range, field, topic, or selected-paper constraints.</span>';
+          return;
+        }
+        els.activeFilters.innerHTML = chips
+          .map(([key, label]) => `<span class="chip"><span class="chip-label">${escapeHtml(label)}</span> <button type="button" data-clear="${key}" aria-label="Clear ${escapeHtml(label)}">x</button></span>`)
+          .join("");
+        els.activeFilters.querySelectorAll("button[data-clear]").forEach((button) => {
+          button.addEventListener("click", () => {
+            clearFilter(button.dataset.clear);
+            renderAll();
+          });
+        });
+      }
+
+      function renderSelectionCue(selectedInSubset, subset, mode) {
+        if (!pinnedPaper) {
+          els.selectionCue.hidden = true;
+          els.selectionCue.innerHTML = "";
+          return;
+        }
+        const fieldContext = selectedFieldContext();
+        const rank = selectedInSubset ? rankPosition(pinnedPaper, subset, mode.key) : null;
+        const scopeCopy = selectedInSubset
+          ? `Marked in the trajectory, distribution, table, and selected summary.`
+          : `Pinned outside the active filters; this summary stays available while the charts show the current comparison.`;
+        const rankCopy = rank ? `#${formatNumber(rank)} of ${formatNumber(subset.length)}` : "outside table";
+        els.selectionCue.hidden = false;
+        els.selectionCue.innerHTML = `
+          <div>
+            <p class="micro">Selected paper active</p>
+            <h3>${escapeHtml(pinnedPaper.title || "Untitled")}</h3>
+            <p>${escapeHtml(shortField(pinnedPaper.field))} · ${pinnedPaper.publication_year} · ${scopeCopy}</p>
+            <div class="selection-stats">
+              <div class="selection-stat"><span>Beauty B</span><strong>${formatNumber(pinnedPaper.recognition_delay, 1)}</strong></div>
+              <div class="selection-stat"><span>Peak year</span><strong>${pinnedPaper.peak_year}</strong></div>
+              <div class="selection-stat"><span>Peak age</span><strong>${pinnedPaper.peak_age}y</strong></div>
+              <div class="selection-stat"><span>Question rank</span><strong>${escapeHtml(rankCopy)}</strong></div>
+              <div class="selection-stat"><span>Field position</span><strong>${fieldContext}</strong></div>
+            </div>
+            <p class="micro">B is computed through ${COMPLETE_CITATION_YEAR}; higher B indicates a stronger delayed-recognition trajectory.</p>
+            <div class="selection-actions">
+              ${selectedInSubset ? "" : '<button type="button" data-selection-action="center">Bring into view</button>'}
+              <button type="button" data-selection-action="clear">Clear selection</button>
+            </div>
           </div>
-          <p class="micro">Annual series shown through ${paper.cutoff_year}. Source peak was ${paper.source_peak_year}; source sleep was ${paper.source_sleep_duration}y.</p>
-          <svg class="spark" id="spark" aria-label="Mini citation trajectory"></svg>
+          <div class="selection-spark-wrap">
+            <svg class="selection-spark" id="selectionSpark" aria-label="Selected paper annual citation trajectory"></svg>
+            <p class="micro">Annual citation trajectory</p>
+          </div>
         `;
-        els.detail.querySelector(".close")?.addEventListener("click", () => {
+        drawSelectionSparkline(pinnedPaper);
+        els.selectionCue.querySelector('[data-selection-action="center"]')?.addEventListener("click", () => {
+          centerOnPaper(pinnedPaper);
+          renderAll();
+          flashSelection();
+        });
+        els.selectionCue.querySelector('[data-selection-action="clear"]').addEventListener("click", () => {
           pinnedPaper = null;
           renderAll();
         });
-        drawSparkline(paper);
       }
 
-      function drawSparkline(paper) {
-        const svgEl = els.detail.querySelector("#spark");
-        if (!svgEl) return;
+      function clearFilter(key) {
+        if (key === "field") els.field.value = "";
+        if (key === "yearRange") configureYearWindow(publicationDomain);
+        if (key === "topic") topicFilter = "";
+        if (key === "delay") delayRange = null;
+        if (key === "minDelay") els.minDelay.value = "0";
+        if (key === "peakAge") els.peakAge.value = "0";
+        if (key === "selected") pinnedPaper = null;
+      }
+
+      function selectedFieldPositionHtml() {
+        if (!pinnedPaper) return "";
+        const fieldSet = selectedFieldWindowSet();
+        if (!fieldSet.length) return "";
+        const delays = fieldSet.map((paper) => paper.recognition_delay).sort((a, b) => a - b);
+        const median = quantile(delays, 0.5);
+        const p90 = quantile(delays, 0.9);
+        const percentile = beautyPercentile(pinnedPaper, fieldSet);
+        return `<span class="micro">Selected field position: ${escapeHtml(shortField(pinnedPaper.field))} median B=${formatNumber(median, 1)}, p90=${formatNumber(p90, 1)}, selected at p${formatNumber(percentile, 0)}.</span>`;
+      }
+
+      function selectedFieldContext() {
+        const fieldSet = selectedFieldWindowSet();
+        if (!fieldSet.length) return "n/a";
+        return `p${formatNumber(beautyPercentile(pinnedPaper, fieldSet), 0)}`;
+      }
+
+      function selectedFieldWindowSet() {
+        if (!pinnedPaper) return [];
+        return filterPapers(papers, {
+          modeKey: els.mode.value,
+          field: pinnedPaper.field,
+          yearRange: currentYearRange(),
+          minDelay: 0,
+          peakAge: 0,
+          delayRange: null,
+          topic: "",
+          query: "",
+        });
+      }
+
+      function beautyPercentile(paper, comparisonSet) {
+        if (!paper || !comparisonSet.length) return 0;
+        const atOrBelow = comparisonSet.filter((item) => item.recognition_delay <= paper.recognition_delay).length;
+        return (atOrBelow / comparisonSet.length) * 100;
+      }
+
+      function rankPosition(paper, subset, modeKey) {
+        if (!paper || !subset.some((item) => item.id === paper.id)) return null;
+        const ranked = rankPapers(subset, modeKey, subset.length);
+        const index = ranked.findIndex((item) => item.id === paper.id);
+        return index >= 0 ? index + 1 : null;
+      }
+
+      function quantile(sortedValues, q) {
+        if (!sortedValues.length) return 0;
+        const pos = (sortedValues.length - 1) * q;
+        const lo = Math.floor(pos);
+        const hi = Math.ceil(pos);
+        if (lo === hi) return sortedValues[lo];
+        return sortedValues[lo] + (sortedValues[hi] - sortedValues[lo]) * (pos - lo);
+      }
+
+      function flashSelection() {
+        if (els.selectionCue.hidden) return;
+        els.selectionCue.classList.remove("selection-flash");
+        void els.selectionCue.offsetWidth;
+        els.selectionCue.classList.add("selection-flash");
+        window.setTimeout(() => {
+          els.selectionCue.classList.remove("selection-flash");
+        }, 1000);
+      }
+
+      function drawSelectionSparkline(paper) {
+        const svgEl = els.selectionCue.querySelector("#selectionSpark");
+        drawPaperSparkline(svgEl, paper, 112);
+      }
+
+      function drawPaperSparkline(svgEl, paper, height) {
+        if (!svgEl || !paper) return;
         const width = svgEl.clientWidth || 300;
-        const height = 96;
         const margin = { top: 8, right: 8, bottom: 22, left: 26 };
         const entries = Object.keys(paper.counts_by_year || {})
           .map(Number)
@@ -1252,30 +1742,42 @@
       function stateText(subset, context) {
         const parts = [
           `${formatNumber(subset.length)} papers in the active comparison`,
-          `${formatNumber(context.length)} in field/decade context`,
+          `${formatNumber(context.length)} in field/year context`,
         ];
-        if (delayRange) parts.push(`D in [${delayRange[0].toFixed(1)}, ${delayRange[1].toFixed(1)}]`);
-        if (els.search.value.trim()) parts.push("search scoped to local dataset");
+        if (delayRange) parts.push(`B in [${delayRange[0].toFixed(1)}, ${delayRange[1].toFixed(1)}]`);
+        if (topicFilter) parts.push("topic lens active");
+        if (els.search.value.trim()) parts.push("search results ready");
         return parts.join(" · ");
-      }
-
-      function resolvePinned(subset) {
-        if (!pinnedPaper) return null;
-        return subset.find((paper) => paper.id === pinnedPaper.id) || null;
       }
 
       function resetFilters() {
         els.mode.value = QUESTION_MODES[0].key;
         els.field.value = "";
-        els.decade.value = "";
+        configureYearWindow(publicationDomain);
         els.minDelay.value = "0";
         els.peakAge.value = "0";
         els.spotlight.value = "28";
         els.search.value = "";
-        els.modeOnly.checked = true;
         delayRange = null;
+        topicFilter = "";
         pinnedPaper = null;
         renderAll();
+      }
+
+      function yearRangeLabel() {
+        const [start, end] = currentYearRange();
+        return start === end ? String(start) : `${start}-${end}`;
+      }
+
+      function includePublicationYear(year) {
+        const value = Number(year);
+        if (!Number.isFinite(value)) return;
+        let [start, end] = currentYearRange();
+        if (value < start) start = value;
+        if (value > end) end = value;
+        els.yearStart.value = String(start);
+        els.yearEnd.value = String(end);
+        syncYearWindow();
       }
 
       function safeDoi(value) {
@@ -1291,6 +1793,10 @@
           '"': "&quot;",
           "'": "&#39;",
         }[char]));
+      }
+
+      function delayPercent(value, max = 34) {
+        return Math.max(0, Math.min(100, (Number(value || 0) / max) * 100)).toFixed(1);
       }
     </script>
   </body>

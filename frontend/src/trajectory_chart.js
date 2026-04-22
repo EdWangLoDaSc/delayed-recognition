@@ -1,4 +1,4 @@
-// Citation trajectory chart: field/decade context plus an interactive
+// Citation trajectory chart: field/year-window context plus an interactive
 // spotlight set ranked by the current analytical question.
 
 const MARGIN = { top: 62, right: 182, bottom: 54, left: 66 };
@@ -61,16 +61,22 @@ export function renderTrajectoryChart({
     }
   }
 
-  const spotlightPapers = [...papers]
+  const rankedPapers = [...papers]
     .filter((paper) => paper.peak_age <= tMax)
-    .sort((a, b) => scoreAccessor(b) - scoreAccessor(a))
-    .slice(0, spotlight);
+    .sort((a, b) => scoreAccessor(b) - scoreAccessor(a));
+  const spotlightPapers = rankedPapers.slice(0, spotlight);
+  const selectedPaper = selectedId ? rankedPapers.find((paper) => paper.id === selectedId) : null;
+  if (selectedPaper && !spotlightPapers.some((paper) => paper.id === selectedId)) {
+    if (spotlightPapers.length >= spotlight) spotlightPapers.pop();
+    spotlightPapers.push(selectedPaper);
+  }
 
   const spotlightTraj = spotlightPapers.map((paper) => ({
     paper,
     pts: toTrajectory(paper).filter((point) => point.t <= tMax),
   }));
-  const labelIds = new Set(spotlightPapers.slice(0, Math.min(16, spotlightPapers.length)).map((paper) => paper.id));
+  const labelIds = new Set(spotlightPapers.slice(0, Math.min(7, spotlightPapers.length)).map((paper) => paper.id));
+  if (selectedId) labelIds.add(selectedId);
 
   const maxCitations =
     d3.max([
@@ -278,7 +284,7 @@ export function renderTrajectoryChart({
       return `${author} '${String(series.paper.publication_year).slice(2)}`;
     });
 
-  dodgeLabels(groups.selectAll(".end-label").nodes(), 13, MARGIN.top + 4, height - MARGIN.bottom - 5);
+  dodgeLabels(groups.selectAll(".end-label").nodes(), 16, MARGIN.top + 4, height - MARGIN.bottom - 5);
 
   let currentSelection = selectedId;
   applySelection(currentSelection);

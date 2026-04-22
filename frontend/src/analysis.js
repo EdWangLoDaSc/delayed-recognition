@@ -12,7 +12,7 @@ export const QUESTION_MODES = [
     label: "Long-sleep awakenings",
     question: "Which papers stayed quiet longest before a citation peak?",
     copy:
-      "Ranks papers by corrected recognition-delay score, sleep duration, and peak citation intensity.",
+      "Uses Beauty score B to surface dormant papers whose citation peak arrives late and intensely.",
     predicate: (paper) => paper.recognition_delay >= 8,
     score: (paper) =>
       paper.recognition_delay * Math.log10(Math.max(2, paper.peak_citations)) +
@@ -23,7 +23,7 @@ export const QUESTION_MODES = [
     label: "Late impact",
     question: "Which delayed papers also reached substantial attention?",
     copy:
-      "Emphasizes papers with late peaks and enough peak citations to avoid tiny-spike artifacts.",
+      "Pairs Beauty score B with peak and lifetime citations so tiny late spikes do not dominate.",
     predicate: (paper) => paper.recognition_delay >= 6 && paper.peak_citations >= 25,
     score: (paper) =>
       paper.recognition_delay * Math.log10(Math.max(2, paper.cited_by_count)),
@@ -33,7 +33,7 @@ export const QUESTION_MODES = [
     label: "Recent awakenings",
     question: "Which older papers awakened in the most recent citation window?",
     copy:
-      "Highlights peaks after 2020. Interpret carefully because OpenAlex annual counts only cover the recent window.",
+      "Highlights peaks after 2020; interpret this as an observed-window view because OpenAlex annual bins are recent-heavy.",
     predicate: (paper) => paper.peak_year >= 2021 && paper.recognition_delay >= 6,
     score: (paper) =>
       (paper.peak_year - 2020) * 2 +
@@ -45,23 +45,23 @@ export const QUESTION_MODES = [
     label: "Early attention contrast",
     question: "Which papers look least like delayed-recognition cases?",
     copy:
-      "Keeps the contrasting population visible so delayed recognition is compared against ordinary or early attention.",
+      "Ranks toward early or steady attention so the dormant-before-peak pattern has a visible comparison group.",
     predicate: () => true,
     score: (paper) =>
-      (paper.source_B || 0) - paper.recognition_delay - paper.sleep_duration * 0.08,
+      -paper.recognition_delay - paper.sleep_duration * 0.08 + Math.log10(Math.max(2, paper.cited_by_count)),
   },
 ];
 
 export const METHOD_CARDS = [
   {
-    label: "Recognition delay score",
+    label: "Beauty score B",
     definition:
-      "A positive UI score recomputed from the paper's annual citation trajectory through the last complete citation year.",
+      "A Van Raan-style delayed-recognition score computed from each annual citation trajectory through the last complete citation year.",
     formula:
-      "D = sum((baseline_t - citations_t) / max(1, baseline_t)) from publication to peak, clipped at zero for filtering.",
+      "B = sum((baseline_t - citations_t) / max(1, baseline_t)) from publication to peak, clipped at zero for filtering.",
     source: "OpenAlex work metadata plus the local Python Beauty Coefficient calculation.",
     caution:
-      "The committed source_B field was generated with an inverted sign and may include the partial 2026 year. The UI preserves source_B for audit but ranks by recomputed D through 2025.",
+      "The dashboard uses B through 2025 consistently for ranking, filtering, and color.",
   },
   {
     label: "Annual citation trajectory",
@@ -86,7 +86,7 @@ export const METHOD_CARDS = [
   {
     label: "Comparable corpus",
     definition:
-      "Highly cited articles with DOI, grouped by OpenAlex primary field and publication decade.",
+      "Highly cited articles with DOI, grouped by OpenAlex primary field and publication year.",
     formula:
       "type:article, has_doi:true, cited_by_count > 5, publication years 1990-2010, sorted by cited_by_count.",
     source: "OpenAlex Works API sampling script.",
@@ -137,12 +137,15 @@ export function corpusSummary(papers) {
   const delays = papers.map((paper) => paper.recognition_delay).sort((a, b) => a - b);
   const observed = papers.map((paper) => paper.first_observed_year).filter(Number.isFinite);
   const candidates = papers.filter((paper) => paper.recognition_delay >= 20);
+  const publicationYears = papers.map((paper) => paper.publication_year).filter(Number.isFinite);
   return {
     total: papers.length,
     fields,
     medianDelay: quantile(delays, 0.5),
     p90Delay: quantile(delays, 0.9),
     candidates: candidates.length,
+    firstPublication: d3Min(publicationYears),
+    lastPublication: d3Max(publicationYears),
     firstObserved: d3Min(observed),
     lastObserved: d3Max(papers.map((paper) => paper.last_observed_year).filter(Number.isFinite)),
   };
@@ -153,9 +156,9 @@ export function filterPapers(papers, filters) {
   const query = normalizeText(filters.query || "");
   return papers.filter((paper) => {
     if (filters.field && paper.field !== filters.field) return false;
-    if (filters.decade) {
-      const lo = Number(filters.decade);
-      const hi = lo === 1990 ? 1999 : 2010;
+    if (filters.topic && paper.topic !== filters.topic) return false;
+    if (filters.yearRange) {
+      const [lo, hi] = filters.yearRange.map(Number);
       if (paper.publication_year < lo || paper.publication_year > hi) return false;
     }
     if (paper.recognition_delay < filters.minDelay) return false;
@@ -164,7 +167,6 @@ export function filterPapers(papers, filters) {
       const [lo, hi] = filters.delayRange;
       if (paper.recognition_delay < lo || paper.recognition_delay > hi) return false;
     }
-    if (filters.modeOnly && !mode.predicate(paper)) return false;
     if (query && !paperSearchText(paper).includes(query)) return false;
     return true;
   });
@@ -200,6 +202,28 @@ export function fieldSummaries(papers) {
   }).sort((a, b) => b.p90Delay - a.p90Delay);
 }
 
+export function topicSummaries(papers, limit = 8) {
+  const groups = new Map();
+  for (const paper of papers) {
+    const topic = paper.topic || "Unlabeled topic";
+    if (!groups.has(topic)) groups.set(topic, []);
+    groups.get(topic).push(paper);
+  }
+  return Array.from(groups, ([topic, rows]) => {
+    const delays = rows.map((paper) => paper.recognition_delay).sort((a, b) => a - b);
+    const fields = new Set(rows.map((paper) => paper.field));
+    return {
+      topic,
+      count: rows.length,
+      fields: fields.size,
+      medianDelay: quantile(delays, 0.5),
+      p90Delay: quantile(delays, 0.9),
+    };
+  })
+    .sort((a, b) => b.count - a.count || b.p90Delay - a.p90Delay)
+    .slice(0, limit);
+}
+
 export function searchPapers(papers, query, limit = 8) {
   const q = normalizeText(query || "");
   if (!q) return [];
@@ -215,11 +239,6 @@ export function formatNumber(value, digits = 0) {
     maximumFractionDigits: digits,
     minimumFractionDigits: digits,
   });
-}
-
-export function formatSigned(value, digits = 2) {
-  if (!Number.isFinite(value)) return "n/a";
-  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}`;
 }
 
 export function shortField(field) {

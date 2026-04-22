@@ -56,7 +56,7 @@ First load takes a few seconds; after that everything is interactive.
 ├── frontend/
 │   ├── index.html             ← Question-led dashboard page
 │   ├── src/
-│   │   ├── analysis.js          ← Question modes, score recomputation, summaries
+│   │   ├── analysis.js          ← Question modes, Beauty score summaries
 │   │   ├── trajectory_chart.js  ← D3 context-and-spotlight trajectory chart
 │   │   └── histogram_panel.js   ← D3 small-multiples histogram of delay score
 │   └── README.md              ← Component API documentation
@@ -70,16 +70,15 @@ First load takes a few seconds; after that everything is interactive.
 
 The atlas is organized as two ruled sections:
 
-1. **Distribution of Recognition Delay.** A small-multiples histogram of
-   the corrected recognition-delay score across the three fields. The score
-   is recomputed in the browser through the last complete citation year
-   because the committed source `B` field was generated with an inverted sign.
+1. **Beauty Score Distribution.** A small-multiples histogram of
+   Beauty score B across the three fields. Higher B indicates a stronger
+   delayed-recognition pattern.
 
 2. **Trajectories in Time.** Papers are aligned to their year of
    publication. A grey interquartile band and median line trace the
-   ordinary life of the current field/decade context; the spotlight works
+   ordinary life of the current field/year-window context; the spotlight works
    are drawn as labeled lines on top, each with a dot marking the year it
-   peaked. Brush the x-axis to inspect peak timing.
+   peaked.
 
 Interactive controls in the toolbar:
 
@@ -87,12 +86,16 @@ Interactive controls in the toolbar:
 |---|---|
 | **Analytical question** | Changes the ranking logic from long-sleep awakenings to late-impact or recent-awakening views. |
 | **Field** | Restrict to CS, physics, or molecular biology. |
-| **Publication decade** | 1990–1999 or 2000–2010. |
-| **Min delay D** | Hide papers below a corrected recognition-delay threshold. |
+| **Publication window** | Set a continuous publication-year range from 1990–2010. |
+| **Min Beauty B** | Hide papers below a Beauty score threshold. |
 | **Min peak age** | Require the citation peak to occur at least this many years after publication. |
 | **Spotlight lines** | Increase or reduce the number of labeled trajectories on screen. |
 | **Search** | Search the local corpus by title, author, venue, topic, or field. |
 | **Methods** | Show formulas, sampling scope, denominators, and cautions next to the interface. |
+
+The current dashboard also links paper selection across search, trajectories,
+histograms, ranked rows, and a compact selected-paper summary with its Beauty
+score, rank, field position, peak timing, and mini citation trajectory.
 
 ---
 
