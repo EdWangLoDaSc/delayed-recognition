@@ -72,11 +72,17 @@ Array of objects:
   "peak_year": 2025,
   "peak_citations": 43,
   "sleep_duration": 2,
-  "awakening_year": 2012
+  "awakening_year": 2012,
+  "venue_type": "journal",
+  "is_oa": true,
+  "oa_status": "green",
+  "author_count": 4
 }
 ```
 
 Records are sorted by `B` descending, so the head of the file is the candidate sleeping beauties.
+
+> **Re-running with the existing cache:** `cache/*.jsonl` only contains fields that were in the original `select` list. To pick up newly added paper-level features (e.g. `is_oa`, `oa_status`), delete the affected cache shard before re-running so the API is queried again with the current `select` clause. Fields derived from already-cached data (`venue_type`, `author_count`) backfill on cache replay without a network call.
 
 ## Known limitations
 

@@ -576,6 +576,25 @@
         color: var(--ink);
       }
 
+      .paper-context-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .context-chip {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border: 1px solid var(--rule);
+        border-radius: 999px;
+        color: var(--muted);
+        background: rgba(247, 245, 240, 0.5);
+      }
+
       .feature-profile {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1696,6 +1715,7 @@
               <span><strong>${escapeHtml(venueLabel(pinnedPaper))}</strong></span>
               <span>${escapeHtml(shortField(pinnedPaper.field))} · ${pinnedPaper.publication_year} · ${scopeCopy}</span>
             </p>
+            ${paperContextChipsHtml(pinnedPaper)}
             <div class="selection-stats">
               <div class="selection-stat"><span>Beauty B</span><strong>${formatNumber(pinnedPaper.recognition_delay, 1)}</strong></div>
               <div class="selection-stat"><span>Peak year</span><strong>${pinnedPaper.peak_year}</strong></div>
@@ -1937,6 +1957,40 @@
 
       function venueLabel(paper) {
         return paper?.venue || "Venue not recorded";
+      }
+
+      function venueTypeLabel(type) {
+        if (!type) return "";
+        const map = {
+          journal: "Journal",
+          conference: "Conference",
+          repository: "Repository",
+          ebook: "Book",
+          book: "Book",
+          "book series": "Book series",
+        };
+        const key = String(type).toLowerCase();
+        return map[key] || (key.charAt(0).toUpperCase() + key.slice(1));
+      }
+
+      function paperContextChipsHtml(paper) {
+        if (!paper) return "";
+        const chips = [];
+        const vType = venueTypeLabel(paper.venue_type);
+        if (vType) chips.push(vType);
+        if (paper.is_oa === true) {
+          const status = paper.oa_status && paper.oa_status !== "closed" ? paper.oa_status : "open";
+          chips.push(`Open access · ${status}`);
+        } else if (paper.is_oa === false && paper.oa_status) {
+          chips.push("Closed access");
+        }
+        if (Number.isFinite(paper.author_count) && paper.author_count > 0) {
+          chips.push(`${paper.author_count} author${paper.author_count === 1 ? "" : "s"}`);
+        }
+        if (!chips.length) return "";
+        return `<p class="paper-meta paper-context-chips">${chips
+          .map((chip) => `<span class="context-chip">${escapeHtml(chip)}</span>`)
+          .join("")}</p>`;
       }
 
       function escapeHtml(value) {

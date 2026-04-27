@@ -310,7 +310,7 @@ function classifyDelay(paper) {
 
 function paperSearchText(paper) {
   return normalizeText(
-    `${paper.title} ${paper.first_author} ${paper.venue} ${paper.topic} ${paper.field} ${paper.publication_year}`
+    `${paper.title} ${paper.first_author} ${paper.venue} ${paper.venue_type || ""} ${paper.topic} ${paper.field} ${paper.publication_year} ${paper.oa_status || ""}`
   );
 }
 

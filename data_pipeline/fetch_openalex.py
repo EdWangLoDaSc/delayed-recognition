@@ -161,7 +161,8 @@ def fetch_works_page(
         ),
         "select": (
             "id,doi,display_name,publication_year,cited_by_count,"
-            "counts_by_year,authorships,primary_location,primary_topic"
+            "counts_by_year,authorships,primary_location,primary_topic,"
+            "open_access"
         ),
         "per_page": per_page,
         "cursor": cursor,
@@ -264,11 +265,19 @@ def transform_paper(work: dict, max_citation_year: int | None = None) -> dict | 
     if authorships:
         first_author = authorships[0].get("author", {}).get("display_name", "")
 
-    # Extract venue
-    venue = ""
+    # Extract venue + venue type (journal / conference / repository / ...)
     primary_loc = work.get("primary_location") or {}
     source = primary_loc.get("source") or {}
     venue = source.get("display_name", "")
+    venue_type = source.get("type", "") or ""
+
+    # Open-access status (per OpenAlex)
+    open_access = work.get("open_access") or {}
+    is_oa = bool(open_access.get("is_oa", False))
+    oa_status = open_access.get("oa_status", "") or ""
+
+    # Author count
+    author_count = len(authorships)
 
     # Extract field from primary_topic
     primary_topic = work.get("primary_topic") or {}
@@ -281,7 +290,11 @@ def transform_paper(work: dict, max_citation_year: int | None = None) -> dict | 
         "doi": work.get("doi", ""),
         "title": work.get("display_name", ""),
         "first_author": first_author,
+        "author_count": author_count,
         "venue": venue,
+        "venue_type": venue_type,
+        "is_oa": is_oa,
+        "oa_status": oa_status,
         "publication_year": pub_year,
         "cited_by_count": work.get("cited_by_count", 0),
         "field": field_name,
