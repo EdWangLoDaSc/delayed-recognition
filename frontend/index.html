@@ -442,7 +442,8 @@
       }
 
       .field-row.active,
-      .topic-row.active {
+      .topic-row.active,
+      .venue-row.active {
         background: var(--accent-soft);
       }
 
@@ -566,16 +567,70 @@
         font-size: 15px;
       }
 
+      .paper-meta {
+        display: grid;
+        gap: 2px;
+      }
+
+      .paper-meta strong {
+        color: var(--ink);
+      }
+
+      .feature-profile {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px 10px;
+        margin-top: 10px;
+      }
+
+      .feature-row {
+        min-width: 0;
+      }
+
+      .feature-label {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .feature-track {
+        height: 7px;
+        margin-top: 4px;
+        background: var(--surface);
+        border: 1px solid var(--rule);
+      }
+
+      .feature-track span {
+        display: block;
+        height: 100%;
+        width: var(--p);
+        background: linear-gradient(90deg, var(--cool), var(--warm));
+      }
+
       .selection-actions {
         display: flex;
+        gap: 8px;
         justify-content: flex-end;
         margin-top: 8px;
       }
 
-      .selection-actions button {
+      .selection-actions button,
+      .selection-actions a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         min-height: 30px;
         padding: 0 9px;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
+        color: var(--ink);
         font-size: 12px;
+        text-decoration: none;
       }
 
       .selection-spark-wrap {
@@ -631,13 +686,15 @@
         color: var(--accent);
       }
 
-      .topic-list {
+      .topic-list,
+      .venue-list {
         display: grid;
         gap: 1px;
         background: var(--rule);
       }
 
-      .topic-row {
+      .topic-row,
+      .venue-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 10px;
@@ -646,13 +703,15 @@
         background: var(--surface);
       }
 
-      .topic-row button {
+      .topic-row button,
+      .venue-row button {
         min-height: 30px;
         padding: 0 8px;
         font-size: 12px;
       }
 
-      .topic-name {
+      .topic-name,
+      .venue-name {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -1069,6 +1128,13 @@
             <div class="topic-list" id="topicLens"></div>
           </section>
 
+          <section class="panel">
+            <div class="panel-head">
+              <h3>Venue Lens</h3>
+            </div>
+            <div class="venue-list" id="venueLens"></div>
+          </section>
+
           <div class="notice">
             Annual OpenAlex citation bins are recent-window evidence. This dashboard can show
             delayed-recognition candidates; it does not prove why recognition was delayed.
@@ -1104,8 +1170,8 @@
 
     <script src="./vendor/d3.v7.min.js"></script>
     <script type="module">
-      import { renderHistogramPanel } from "./src/histogram_panel.js";
-      import { renderTrajectoryChart } from "./src/trajectory_chart.js";
+      import { renderHistogramPanel } from "./src/histogram_panel.js?v=dashboard-venue";
+      import { renderTrajectoryChart } from "./src/trajectory_chart.js?v=dashboard-venue";
       import {
         COMPLETE_CITATION_YEAR,
         METHOD_CARDS,
@@ -1115,11 +1181,13 @@
         filterPapers,
         formatNumber,
         normalizeCorpus,
+        paperProfile,
         rankPapers,
         searchPapers,
         shortField,
         topicSummaries,
-      } from "./src/analysis.js";
+        venueSummaries,
+      } from "./src/analysis.js?v=dashboard-venue";
 
       const els = {
         metrics: document.getElementById("metrics"),
@@ -1146,6 +1214,7 @@
         trajectory: document.getElementById("trajectory"),
         fieldSummary: document.getElementById("fieldSummary"),
         topicLens: document.getElementById("topicLens"),
+        venueLens: document.getElementById("venueLens"),
         searchResults: document.getElementById("searchResults"),
         rankTable: document.getElementById("rankTable"),
         rankContext: document.getElementById("rankContext"),
@@ -1156,6 +1225,7 @@
       let summary = null;
       let delayRange = null;
       let topicFilter = "";
+      let venueFilter = "";
       let pinnedPaper = null;
       let searchTimer = null;
       let publicationDomain = [1990, 2010];
@@ -1201,6 +1271,7 @@
         els.mode.addEventListener("change", () => {
           delayRange = null;
           topicFilter = "";
+          venueFilter = "";
           renderAll();
         });
         [els.field, els.minDelay, els.peakAge, els.spotlight].forEach((el) =>
@@ -1281,6 +1352,7 @@
           peakAge: 0,
           delayRange: null,
           topic: "",
+          venue: "",
           query: "",
         };
       }
@@ -1294,6 +1366,7 @@
           peakAge: Number(els.peakAge.value) || 0,
           delayRange,
           topic: topicFilter,
+          venue: venueFilter,
           query: "",
         };
       }
@@ -1326,8 +1399,10 @@
 
         const fieldLensSet = filterPapers(papers, { ...currentFilters(), field: "" });
         const topicLensSet = filterPapers(papers, { ...currentFilters(), topic: "", delayRange: null });
+        const venueLensSet = filterPapers(papers, { ...currentFilters(), venue: "", delayRange: null });
         renderFieldLens(fieldLensSet);
         renderTopicLens(topicLensSet);
+        renderVenueLens(venueLensSet);
         renderSearchResults();
         renderRankTable(subset, mode);
         renderHistogramPanel({
@@ -1429,6 +1504,33 @@
         });
       }
 
+      function renderVenueLens(subset) {
+        const rows = venueSummaries(subset, 8);
+        if (!rows.length) {
+          els.venueLens.innerHTML = '<div class="venue-row"><p class="micro">No recorded venues in scope.</p></div>';
+          return;
+        }
+        els.venueLens.innerHTML = rows
+          .map(
+            (row) => `
+              <div class="venue-row ${venueFilter === row.venue ? "active" : ""}">
+                <div>
+                  <div class="venue-name" title="${escapeHtml(row.venue)}">${escapeHtml(row.venue)}</div>
+                  <p class="micro">n=${formatNumber(row.count)} · median B=${formatNumber(row.medianDelay, 1)} · high-B ${formatNumber(row.highShare * 100, 0)}% · ${row.fields} field${row.fields === 1 ? "" : "s"}</p>
+                </div>
+                <button type="button" data-venue="${escapeHtml(row.venue)}">${venueFilter === row.venue ? "Clear" : "Use"}</button>
+              </div>
+            `
+          )
+          .join("");
+        els.venueLens.querySelectorAll("button[data-venue]").forEach((button) => {
+          button.addEventListener("click", () => {
+            venueFilter = venueFilter === button.dataset.venue ? "" : button.dataset.venue;
+            renderAll();
+          });
+        });
+      }
+
       function renderSearchResults() {
         const query = els.search.value.trim();
         const results = searchPapers(papers, query, 7);
@@ -1446,7 +1548,7 @@
             (paper) => `
               <button type="button" data-id="${escapeHtml(paper.id)}" aria-pressed="${String(pinnedPaper?.id === paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}">
                 <b>${escapeHtml(paper.title || "Untitled")}</b>
-                <span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · B=${formatNumber(paper.recognition_delay, 1)}</span>
+                <span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · ${escapeHtml(venueLabel(paper))} · B=${formatNumber(paper.recognition_delay, 1)}</span>
               </button>
             `
           )
@@ -1496,7 +1598,7 @@
                   (paper, index) => `
                     <tr tabindex="0" data-id="${escapeHtml(paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}" aria-selected="${String(pinnedPaper?.id === paper.id)}">
                       <td class="num-cell">${rankById.get(paper.id) || index + 1}</td>
-                      <td class="title-cell"><b>${escapeHtml(paper.title || "Untitled")}</b><br><span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year}</span></td>
+                      <td class="title-cell"><b>${escapeHtml(paper.title || "Untitled")}</b><br><span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · ${escapeHtml(venueLabel(paper))}</span></td>
                       <td>${escapeHtml(paper.field_label)}</td>
                       <td class="num-cell">${formatNumber(paper.recognition_delay, 1)}</td>
                       <td class="num-cell">${paper.peak_age}y</td>
@@ -1541,6 +1643,7 @@
         els.field.value = paper.field;
         includePublicationYear(paper.publication_year);
         topicFilter = "";
+        venueFilter = "";
         delayRange = null;
         if ((Number(els.minDelay.value) || 0) > paper.recognition_delay) els.minDelay.value = "0";
         if ((Number(els.peakAge.value) || 0) > paper.peak_age) els.peakAge.value = "0";
@@ -1551,6 +1654,7 @@
         if (els.field.value) chips.push(["field", `Field: ${shortField(els.field.value)}`]);
         if (!isFullPublicationWindow()) chips.push(["yearRange", `Years: ${yearRangeLabel()}`]);
         if (topicFilter) chips.push(["topic", `Topic: ${topicFilter}`]);
+        if (venueFilter) chips.push(["venue", `Venue: ${venueFilter}`]);
         if (delayRange) chips.push(["delay", `Beauty B ${delayRange[0].toFixed(1)}-${delayRange[1].toFixed(1)}`]);
         if (Number(els.minDelay.value) > 0) chips.push(["minDelay", `Min Beauty B: ${els.minDelay.value}`]);
         if (Number(els.peakAge.value) > 0) chips.push(["peakAge", `Min peak age: ${els.peakAge.value}y`]);
@@ -1582,12 +1686,16 @@
           ? `Marked in the trajectory, distribution, table, and selected summary.`
           : `Pinned outside the active filters; this summary stays available while the charts show the current comparison.`;
         const rankCopy = rank ? `#${formatNumber(rank)} of ${formatNumber(subset.length)}` : "outside table";
+        const doi = safeDoi(pinnedPaper.doi);
         els.selectionCue.hidden = false;
         els.selectionCue.innerHTML = `
           <div>
             <p class="micro">Selected paper active</p>
             <h3>${escapeHtml(pinnedPaper.title || "Untitled")}</h3>
-            <p>${escapeHtml(shortField(pinnedPaper.field))} · ${pinnedPaper.publication_year} · ${scopeCopy}</p>
+            <p class="paper-meta">
+              <span><strong>${escapeHtml(venueLabel(pinnedPaper))}</strong></span>
+              <span>${escapeHtml(shortField(pinnedPaper.field))} · ${pinnedPaper.publication_year} · ${scopeCopy}</span>
+            </p>
             <div class="selection-stats">
               <div class="selection-stat"><span>Beauty B</span><strong>${formatNumber(pinnedPaper.recognition_delay, 1)}</strong></div>
               <div class="selection-stat"><span>Peak year</span><strong>${pinnedPaper.peak_year}</strong></div>
@@ -1595,9 +1703,11 @@
               <div class="selection-stat"><span>Question rank</span><strong>${escapeHtml(rankCopy)}</strong></div>
               <div class="selection-stat"><span>Field position</span><strong>${fieldContext}</strong></div>
             </div>
+            ${featureProfileHtml(pinnedPaper, selectedProfileSet(selectedInSubset, subset))}
             <p class="micro">B is computed through ${COMPLETE_CITATION_YEAR}; higher B indicates a stronger delayed-recognition trajectory.</p>
             <div class="selection-actions">
               ${selectedInSubset ? "" : '<button type="button" data-selection-action="center">Bring into view</button>'}
+              ${doi ? `<a href="${escapeHtml(doi)}" target="_blank" rel="noreferrer">DOI</a>` : ""}
               <button type="button" data-selection-action="clear">Clear selection</button>
             </div>
           </div>
@@ -1622,6 +1732,7 @@
         if (key === "field") els.field.value = "";
         if (key === "yearRange") configureYearWindow(publicationDomain);
         if (key === "topic") topicFilter = "";
+        if (key === "venue") venueFilter = "";
         if (key === "delay") delayRange = null;
         if (key === "minDelay") els.minDelay.value = "0";
         if (key === "peakAge") els.peakAge.value = "0";
@@ -1655,6 +1766,7 @@
           peakAge: 0,
           delayRange: null,
           topic: "",
+          venue: "",
           query: "",
         });
       }
@@ -1670,6 +1782,35 @@
         const ranked = rankPapers(subset, modeKey, subset.length);
         const index = ranked.findIndex((item) => item.id === paper.id);
         return index >= 0 ? index + 1 : null;
+      }
+
+      function selectedProfileSet(selectedInSubset, subset) {
+        if (selectedInSubset && subset.length) return subset;
+        const fieldSet = selectedFieldWindowSet();
+        return fieldSet.length ? fieldSet : papers;
+      }
+
+      function featureProfileHtml(paper, comparisonSet) {
+        const rows = paperProfile(paper, comparisonSet);
+        if (!rows.length) return "";
+        return `
+          <div class="feature-profile" aria-label="Selected paper feature profile">
+            ${rows
+              .map((row) => {
+                const percentile = Math.max(0, Math.min(100, row.percentile || 0));
+                return `
+                  <div class="feature-row">
+                    <div class="feature-label">
+                      <span>${escapeHtml(row.label)}</span>
+                      <strong>${escapeHtml(row.value)} · p${formatNumber(percentile, 0)}</strong>
+                    </div>
+                    <div class="feature-track" style="--p: ${percentile.toFixed(1)}%" aria-hidden="true"><span></span></div>
+                  </div>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
       }
 
       function quantile(sortedValues, q) {
@@ -1753,6 +1894,7 @@
         ];
         if (delayRange) parts.push(`B in [${delayRange[0].toFixed(1)}, ${delayRange[1].toFixed(1)}]`);
         if (topicFilter) parts.push("topic lens active");
+        if (venueFilter) parts.push("venue lens active");
         if (els.search.value.trim()) parts.push("search results ready");
         return parts.join(" · ");
       }
@@ -1767,6 +1909,7 @@
         els.search.value = "";
         delayRange = null;
         topicFilter = "";
+        venueFilter = "";
         pinnedPaper = null;
         renderAll();
       }
@@ -1790,6 +1933,10 @@
       function safeDoi(value) {
         const text = String(value || "");
         return text.startsWith("https://doi.org/") ? text : "";
+      }
+
+      function venueLabel(paper) {
+        return paper?.venue || "Venue not recorded";
       }
 
       function escapeHtml(value) {
