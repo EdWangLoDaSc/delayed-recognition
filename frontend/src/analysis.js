@@ -157,6 +157,7 @@ export function filterPapers(papers, filters) {
   return papers.filter((paper) => {
     if (filters.field && paper.field !== filters.field) return false;
     if (filters.topic && paper.topic !== filters.topic) return false;
+    if (filters.venue && paper.venue !== filters.venue) return false;
     if (filters.yearRange) {
       const [lo, hi] = filters.yearRange.map(Number);
       if (paper.publication_year < lo || paper.publication_year > hi) return false;
@@ -224,6 +225,61 @@ export function topicSummaries(papers, limit = 8) {
     .slice(0, limit);
 }
 
+export function venueSummaries(papers, limit = 8) {
+  const groups = new Map();
+  for (const paper of papers) {
+    const venue = paper.venue || "";
+    if (!venue) continue;
+    if (!groups.has(venue)) groups.set(venue, []);
+    groups.get(venue).push(paper);
+  }
+  return Array.from(groups, ([venue, rows]) => {
+    const delays = rows.map((paper) => paper.recognition_delay).sort((a, b) => a - b);
+    const fields = new Set(rows.map((paper) => paper.field));
+    const peakAges = rows.map((paper) => paper.peak_age).filter(Number.isFinite).sort((a, b) => a - b);
+    const highShare = rows.filter((paper) => paper.recognition_delay >= 20).length / rows.length;
+    const p90Delay = quantile(delays, 0.9);
+    return {
+      venue,
+      count: rows.length,
+      fields: fields.size,
+      medianDelay: quantile(delays, 0.5),
+      p90Delay,
+      medianPeakAge: quantile(peakAges, 0.5),
+      highShare,
+      salience: Math.log10(rows.length + 1) * (0.65 + highShare) + (p90Delay / 34) * 0.55,
+    };
+  })
+    .sort((a, b) => b.salience - a.salience || b.count - a.count)
+    .slice(0, limit);
+}
+
+export function paperProfile(paper, comparisonSet) {
+  if (!paper || !Array.isArray(comparisonSet) || !comparisonSet.length) return [];
+  return [
+    {
+      label: "Beauty B",
+      value: formatNumber(paper.recognition_delay, 1),
+      percentile: percentileRank(paper.recognition_delay, comparisonSet.map((item) => item.recognition_delay)),
+    },
+    {
+      label: "Peak age",
+      value: `${paper.peak_age}y`,
+      percentile: percentileRank(paper.peak_age, comparisonSet.map((item) => item.peak_age)),
+    },
+    {
+      label: "Peak cites",
+      value: formatNumber(paper.peak_citations),
+      percentile: percentileRank(paper.peak_citations, comparisonSet.map((item) => item.peak_citations)),
+    },
+    {
+      label: "Lifetime cites",
+      value: formatNumber(paper.cited_by_count),
+      percentile: percentileRank(paper.cited_by_count, comparisonSet.map((item) => item.cited_by_count)),
+    },
+  ];
+}
+
 export function searchPapers(papers, query, limit = 8) {
   const q = normalizeText(query || "");
   if (!q) return [];
@@ -269,6 +325,14 @@ function quantile(sortedValues, q) {
   const hi = Math.ceil(pos);
   if (lo === hi) return sortedValues[lo];
   return sortedValues[lo] + (sortedValues[hi] - sortedValues[lo]) * (pos - lo);
+}
+
+function percentileRank(value, values) {
+  if (!Number.isFinite(value)) return 0;
+  const clean = values.filter(Number.isFinite);
+  if (!clean.length) return 0;
+  const atOrBelow = clean.filter((item) => item <= value).length;
+  return (atOrBelow / clean.length) * 100;
 }
 
 function d3Min(values) {
