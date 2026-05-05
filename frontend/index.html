@@ -327,6 +327,87 @@
         max-width: 860px;
       }
 
+      .question-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .question-title-row h2 {
+        margin: 0;
+      }
+
+      .criteria-toggle {
+        flex: 0 0 auto;
+        width: 26px;
+        height: 26px;
+        min-height: 26px;
+        padding: 0;
+        border-radius: 50%;
+        border: 1px solid var(--rule-strong);
+        background: var(--surface);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+      }
+
+      .criteria-toggle:hover,
+      .criteria-toggle:focus-visible,
+      .criteria-toggle[aria-expanded="true"] {
+        background: var(--ink);
+        color: var(--surface);
+        border-color: var(--ink);
+      }
+
+      .criteria-popover {
+        margin-top: 10px;
+        max-width: 640px;
+        padding: 12px 14px;
+        background: var(--surface);
+        border: 1px solid var(--rule-strong);
+        border-left: 3px solid var(--accent);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .criteria-popover[hidden] {
+        display: none;
+      }
+
+      .criteria-popover dl {
+        margin: 0;
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 4px 14px;
+      }
+
+      .criteria-popover dt {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--muted);
+        align-self: center;
+      }
+
+      .criteria-popover dd {
+        margin: 0;
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .criteria-popover .criteria-note {
+        margin: 8px 0 0;
+        color: var(--ink-soft);
+        font-size: 12px;
+        font-style: italic;
+      }
+
       .state-line {
         font-family: var(--mono);
         font-size: 9.5px;
@@ -401,6 +482,46 @@
         color: var(--ink-soft);
         font-size: 13px;
       }
+
+      .formula-note {
+        margin: 8px 16px 0;
+        max-width: 900px;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+        border: 1px solid var(--rule);
+        background: var(--surface);
+        border-radius: 4px;
+      }
+      .formula-note > summary {
+        cursor: pointer;
+        padding: 6px 10px;
+        font-weight: 600;
+        color: var(--ink);
+        list-style: none;
+      }
+      .formula-note > summary::-webkit-details-marker { display: none; }
+      .formula-note > summary::before {
+        content: "▸ ";
+        display: inline-block;
+        transition: transform 0.15s;
+      }
+      .formula-note[open] > summary::before { content: "▾ "; }
+      .formula-note .body {
+        padding: 0 12px 10px;
+        line-height: 1.5;
+      }
+      .formula-note .formula {
+        display: block;
+        margin: 6px 0;
+        padding: 8px 10px;
+        background: var(--bg);
+        border-left: 2px solid var(--accent, #888);
+        font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace);
+        font-size: 12px;
+        white-space: pre-wrap;
+      }
+      .formula-note ul { margin: 6px 0 6px 18px; padding: 0; }
+      .formula-note li { margin: 2px 0; }
 
       .chart-pad {
         padding: 10px 10px 8px;
@@ -1079,8 +1200,19 @@
       <section class="question-panel" aria-live="polite">
         <div>
           <p class="eyebrow">Current question</p>
-          <h2 id="questionTitle">-</h2>
+          <div class="question-title-row">
+            <h2 id="questionTitle">-</h2>
+            <button
+              type="button"
+              id="criteriaToggle"
+              class="criteria-toggle"
+              aria-expanded="false"
+              aria-controls="criteriaPopover"
+              title="Show selection criteria"
+            >?</button>
+          </div>
           <p id="questionCopy">-</p>
+          <div id="criteriaPopover" class="criteria-popover" hidden></div>
           <div id="selectionCue" class="selection-cue" hidden></div>
           <div class="active-filters" id="activeFilters"></div>
         </div>
@@ -1106,6 +1238,31 @@
               Bar height is paper count. Click a bar to filter Beauty score B
               used by the trajectory spotlight.
             </p>
+            <details class="formula-note">
+              <summary>How is Beauty score B computed?</summary>
+              <div class="body">
+                <p>
+                  B (Van Raan, 2004) measures how much a paper's early citation history dipped
+                  below a straight line connecting its publication year to its peak-citation year.
+                  Higher B = longer, deeper dormancy before a sharp awakening.
+                </p>
+                <code class="formula">B = Σ over t = 0…t_peak of  (ℓ(t) − c(t)) / max(1, ℓ(t))
+
+where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
+       c(t) = citations received in year t after publication
+       t_peak = year index of the citation peak</code>
+                <ul>
+                  <li><strong>ℓ(t)</strong> — the "expected" linear growth baseline from year 0 to the peak.</li>
+                  <li><strong>ℓ(t) − c(t)</strong> — how far the paper fell below that baseline in year t.</li>
+                  <li>Each year's gap is normalized by the baseline, then summed up to the peak.</li>
+                  <li>If the peak comes within the first 2 years (t_peak ≤ 1), B is forced to 0 — instant hits do not count as sleeping beauties.</li>
+                </ul>
+                <p>
+                  <strong>Reading B:</strong> B ≈ 0 → smooth growth, no dormancy. Larger B → the paper
+                  was systematically under-cited for years before its eventual awakening.
+                </p>
+              </div>
+            </details>
             <div class="chart-pad"><div id="histogram" class="empty-chart">Loading distribution.</div></div>
           </section>
 
@@ -1226,6 +1383,8 @@
         methodGrid: document.getElementById("methodGrid"),
         questionTitle: document.getElementById("questionTitle"),
         questionCopy: document.getElementById("questionCopy"),
+        criteriaToggle: document.getElementById("criteriaToggle"),
+        criteriaPopover: document.getElementById("criteriaPopover"),
         activeFilters: document.getElementById("activeFilters"),
         selectionCue: document.getElementById("selectionCue"),
         stateLine: document.getElementById("stateLine"),
@@ -1309,6 +1468,31 @@
         els.reset.addEventListener("click", resetFilters);
         els.methodsBtn.addEventListener("click", () => els.methodsDialog.showModal());
         els.closeMethods.addEventListener("click", () => els.methodsDialog.close());
+        els.criteriaToggle.addEventListener("click", () => {
+          const open = !els.criteriaPopover.hasAttribute("hidden");
+          if (open) {
+            els.criteriaPopover.setAttribute("hidden", "");
+            els.criteriaToggle.setAttribute("aria-expanded", "false");
+          } else {
+            els.criteriaPopover.removeAttribute("hidden");
+            els.criteriaToggle.setAttribute("aria-expanded", "true");
+          }
+        });
+      }
+
+      function renderCriteria(mode) {
+        const criteria = mode.criteria;
+        if (!criteria) {
+          els.criteriaPopover.innerHTML = "";
+          return;
+        }
+        els.criteriaPopover.innerHTML = `
+          <dl>
+            <dt>Include</dt><dd>${escapeHtml(criteria.include)}</dd>
+            <dt>Rank by</dt><dd>${escapeHtml(criteria.rank)}</dd>
+          </dl>
+          ${criteria.note ? `<p class="criteria-note">${escapeHtml(criteria.note)}</p>` : ""}
+        `;
       }
 
       function populateFieldOptions(fields) {
@@ -1405,6 +1589,7 @@
         syncYearWindow();
         els.questionTitle.textContent = mode.question;
         els.questionCopy.textContent = mode.copy;
+        renderCriteria(mode);
         els.stateLine.textContent = stateText(subset, context);
         renderActiveFilters(selectedInSubset);
         renderSelectionCue(selectedInSubset, subset, mode);
