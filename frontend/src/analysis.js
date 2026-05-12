@@ -13,6 +13,11 @@ export const QUESTION_MODES = [
     question: "Which papers stayed quiet longest before a citation peak?",
     copy:
       "Uses Beauty score B to surface dormant papers whose citation peak arrives late and intensely.",
+    criteria: {
+      include: "recognition delay >= 8 years",
+      rank: "delay x log10(peak citations) + 0.18 x sleep duration",
+      note: "Classic sleeping-beauty view: long dormancy followed by a sharp peak.",
+    },
     predicate: (paper) => paper.recognition_delay >= 8,
     score: (paper) =>
       paper.recognition_delay * Math.log10(Math.max(2, paper.peak_citations)) +
@@ -24,6 +29,11 @@ export const QUESTION_MODES = [
     question: "Which delayed papers also reached substantial attention?",
     copy:
       "Pairs Beauty score B with peak and lifetime citations so tiny late spikes do not dominate.",
+    criteria: {
+      include: "recognition delay >= 6 years AND peak citations >= 25",
+      rank: "delay x log10(lifetime citations)",
+      note: "Adds an impact floor so tiny late spikes do not dominate.",
+    },
     predicate: (paper) => paper.recognition_delay >= 6 && paper.peak_citations >= 25,
     score: (paper) =>
       paper.recognition_delay * Math.log10(Math.max(2, paper.cited_by_count)),
@@ -34,6 +44,11 @@ export const QUESTION_MODES = [
     question: "Which older papers awakened in the most recent citation window?",
     copy:
       "Highlights peaks after 2020; interpret this as an observed-window view because OpenAlex annual bins are recent-heavy.",
+    criteria: {
+      include: "peak year >= 2021 AND recognition delay >= 6 years",
+      rank: "2 x (peak year - 2020) + delay + log10(peak citations)",
+      note: "Observed-window view; OpenAlex annual bins skew recent, so read with care.",
+    },
     predicate: (paper) => paper.peak_year >= 2021 && paper.recognition_delay >= 6,
     score: (paper) =>
       (paper.peak_year - 2020) * 2 +
@@ -46,6 +61,11 @@ export const QUESTION_MODES = [
     question: "Which papers look least like delayed-recognition cases?",
     copy:
       "Ranks toward early or steady attention so the dormant-before-peak pattern has a visible comparison group.",
+    criteria: {
+      include: "all papers (no filter)",
+      rank: "log10(lifetime citations) - delay - 0.08 x sleep duration",
+      note: "Reverse view: surfaces early or steady-attention papers as a comparison group.",
+    },
     predicate: () => true,
     score: (paper) =>
       -paper.recognition_delay - paper.sleep_duration * 0.08 + Math.log10(Math.max(2, paper.cited_by_count)),

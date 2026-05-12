@@ -21,3 +21,4 @@ Thumbs.db
 node_modules/
 dist/
 .svelte-kit/
+.claude/settings.local.json
