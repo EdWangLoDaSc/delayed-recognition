@@ -523,6 +523,123 @@
       .formula-note ul { margin: 6px 0 6px 18px; padding: 0; }
       .formula-note li { margin: 2px 0; }
 
+      .step-badge {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        margin-right: 10px;
+        border-radius: 50%;
+        background: var(--warm);
+        color: #fff;
+        font-family: var(--display);
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1;
+        vertical-align: 0.05em;
+      }
+
+      .control-dock .step-badge {
+        margin-right: 8px;
+      }
+      .question-title-row .step-badge {
+        margin-right: 0;
+        flex: 0 0 auto;
+      }
+      .panel-head .step-badge {
+        margin-right: 10px;
+      }
+
+      .dock-hint {
+        grid-column: 1 / -1;
+        margin: 0 0 4px;
+        padding: 9px 12px;
+        border-left: 3px solid var(--accent);
+        background: var(--accent-soft);
+        color: var(--ink);
+        font-size: 12.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .dock-hint[hidden] { display: none; }
+      .dock-hint b { font-weight: 650; }
+      .dock-hint button {
+        margin-left: auto;
+        min-height: 0;
+        padding: 2px 8px;
+        font-size: 11px;
+        background: transparent;
+        border: 1px solid var(--rule-strong);
+        color: var(--muted);
+        border-radius: 3px;
+      }
+
+      .welcome-body { display: grid; gap: 18px; }
+      .welcome-body section { display: grid; gap: 6px; }
+      .welcome-body h3 {
+        margin: 0;
+        font-family: var(--display);
+        font-size: 17px;
+        font-weight: 650;
+        color: var(--ink);
+      }
+      .welcome-body p { margin: 0; color: var(--ink-soft); font-size: 13.5px; line-height: 1.55; }
+      .welcome-steps {
+        margin: 4px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+        counter-reset: welcome-step;
+      }
+      .welcome-steps li {
+        position: relative;
+        padding-left: 36px;
+        font-size: 13.5px;
+        color: var(--ink-soft);
+        line-height: 1.5;
+        counter-increment: welcome-step;
+      }
+      .welcome-steps li::before {
+        content: counter(welcome-step);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--warm);
+        color: #fff;
+        font-family: var(--display);
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1;
+      }
+      .welcome-steps li b { color: var(--ink); font-weight: 650; }
+      .welcome-foot {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .welcome-link {
+        background: none;
+        border: 0;
+        padding: 0;
+        color: var(--cool);
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 13px;
+        min-height: 0;
+      }
+      .welcome-link:hover, .welcome-link:focus-visible {
+        outline: none;
+        color: var(--accent);
+      }
+
       .chart-pad {
         padding: 10px 10px 8px;
       }
@@ -626,6 +743,44 @@
         gap: 8px;
         margin-top: 14px;
         min-width: 0;
+      }
+
+      .presets {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .presets-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-right: 2px;
+      }
+      .preset-chip {
+        min-height: 0;
+        padding: 5px 11px;
+        border: 1px solid var(--rule-strong);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--ink);
+        font-size: 12.5px;
+        cursor: pointer;
+        transition: border-color 0.12s, background 0.12s, color 0.12s;
+      }
+      .preset-chip:hover, .preset-chip:focus-visible {
+        border-color: var(--warm);
+        background: #fbf0ea;
+        color: var(--warm);
+        outline: none;
+      }
+      .preset-chip.active {
+        background: var(--warm);
+        border-color: var(--warm);
+        color: #fff;
       }
 
       .selection-cue {
@@ -1152,6 +1307,7 @@
         </div>
         <div class="mast-side">
           <div class="mast-actions">
+            <button class="ghost-button" id="showAroundBtn" type="button">Show me around</button>
             <button class="primary-button" id="methodsBtn" type="button">Methods</button>
             <button class="ghost-button" id="resetBtn" type="button">Reset</button>
           </div>
@@ -1166,8 +1322,12 @@
       </header>
 
       <section class="control-dock" aria-label="Dashboard controls">
+        <div id="dockHint" class="dock-hint" hidden>
+          <span><b>Start here.</b> Pick an analytical question and adjust the filters — every panel below updates live.</span>
+          <button type="button" id="dockHintDismiss" aria-label="Dismiss hint">Got it</button>
+        </div>
         <label class="control">
-          <span>Analytical question</span>
+          <span><span class="step-badge" aria-hidden="true">1</span>Analytical question</span>
           <select id="mode"></select>
         </label>
         <label class="control">
@@ -1201,6 +1361,7 @@
         <div>
           <p class="eyebrow">Current question</p>
           <div class="question-title-row">
+            <span class="step-badge" aria-hidden="true">2</span>
             <h2 id="questionTitle">-</h2>
             <button
               type="button"
@@ -1214,6 +1375,13 @@
           <p id="questionCopy">-</p>
           <div id="criteriaPopover" class="criteria-popover" hidden></div>
           <div id="selectionCue" class="selection-cue" hidden></div>
+          <div class="presets" id="presets">
+            <span class="presets-label">Try this</span>
+            <button type="button" class="preset-chip" data-preset="sleepers-physics">Famous sleepers in physics</button>
+            <button type="button" class="preset-chip" data-preset="recent-cs">Recent CS awakenings</button>
+            <button type="button" class="preset-chip" data-preset="impact-bio">High-impact molecular biology</button>
+            <button type="button" class="preset-chip" data-preset="contrast-all">Cross-field contrast</button>
+          </div>
           <div class="active-filters" id="activeFilters"></div>
         </div>
         <div class="question-tools">
@@ -1232,7 +1400,7 @@
         <div class="main-stack">
           <section class="panel distribution-panel">
             <div class="panel-head">
-              <h3>Beauty Score Distribution</h3>
+              <h3><span class="step-badge" aria-hidden="true">3</span>Beauty Score Distribution</h3>
             </div>
             <p class="panel-copy">
               Bar height is paper count. Click a bar to filter Beauty score B
@@ -1268,7 +1436,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
 
           <section class="panel trajectory-panel">
             <div class="panel-head">
-              <h3>Trajectories in Time</h3>
+              <h3><span class="step-badge" aria-hidden="true">4</span>Trajectories in Time</h3>
               <span class="aside">Context plus spotlight</span>
             </div>
             <p class="panel-copy" id="brushSummary">
@@ -1279,7 +1447,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
 
           <section class="panel table-panel">
             <div class="panel-head">
-              <h3>Ranked Papers</h3>
+              <h3><span class="step-badge" aria-hidden="true">5</span>Ranked Papers</h3>
             </div>
             <p class="panel-copy" id="rankContext">
               The table uses the active analytical question and the same filters as the charts.
@@ -1344,6 +1512,48 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
       </div>
     </dialog>
 
+    <dialog id="welcomeDialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">A 30-second orientation</p>
+          <h2>Welcome to the Delayed Recognition Atlas</h2>
+        </div>
+        <button class="ghost-button" id="closeWelcome" type="button">Close</button>
+      </div>
+      <div class="dialog-body welcome-body">
+        <section>
+          <h3>What you're looking at</h3>
+          <p>
+            A curated corpus of computer science, physics, and molecular biology papers
+            (1990–2010) scored for <b>delayed recognition</b> — work whose citation impact
+            arrived years, sometimes decades, after publication.
+          </p>
+        </section>
+        <section>
+          <h3>What "Beauty score B" means</h3>
+          <p>
+            <b>B</b> (Van Raan, 2004) measures how far a paper's early citations fell
+            <i>below</i> a straight line to its eventual peak. Higher B = longer dormancy
+            before a sharper awakening.
+            <button type="button" class="welcome-link" id="welcomeFormulaLink">See the formula →</button>
+          </p>
+        </section>
+        <section>
+          <h3>How to read the dashboard</h3>
+          <ol class="welcome-steps">
+            <li><b>Pick a question &amp; filters</b> in the sticky control dock — choose what kind of recognition pattern you want (sleepers, big impact, recent awakenings, contrast across fields), then narrow by field, year window, or minimum B.</li>
+            <li><b>Read the framing</b> — the current question, its selection criteria (the <kbd>?</kbd> button), and the active filters.</li>
+            <li><b>Scan the B distribution</b> — small-multiples histograms by field. Click a bar to focus the trajectory spotlight on that B range.</li>
+            <li><b>Inspect citation trajectories</b> — every paper plotted from publication year onward; spotlighted papers are highlighted in warm color.</li>
+            <li><b>Drill into ranked papers</b> — click a row to pin a paper. Its profile, mini-trajectory, and links appear above; the side lenses summarize field, topic, and venue context.</li>
+          </ol>
+        </section>
+        <div class="welcome-foot">
+          <button class="primary-button" id="welcomeStart" type="button">Start exploring</button>
+        </div>
+      </div>
+    </dialog>
+
     <script src="./vendor/d3.v7.min.js"></script>
     <script type="module">
       import { renderHistogramPanel } from "./src/histogram_panel.js?v=dashboard-venue";
@@ -1380,6 +1590,13 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
         methodsBtn: document.getElementById("methodsBtn"),
         methodsDialog: document.getElementById("methodsDialog"),
         closeMethods: document.getElementById("closeMethods"),
+        showAroundBtn: document.getElementById("showAroundBtn"),
+        welcomeDialog: document.getElementById("welcomeDialog"),
+        closeWelcome: document.getElementById("closeWelcome"),
+        welcomeStart: document.getElementById("welcomeStart"),
+        welcomeFormulaLink: document.getElementById("welcomeFormulaLink"),
+        dockHint: document.getElementById("dockHint"),
+        dockHintDismiss: document.getElementById("dockHintDismiss"),
         methodGrid: document.getElementById("methodGrid"),
         questionTitle: document.getElementById("questionTitle"),
         questionCopy: document.getElementById("questionCopy"),
@@ -1408,6 +1625,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
       let searchTimer = null;
       let publicationDomain = [1990, 2010];
 
+      initOnboarding();
       initControls();
       renderMethods();
       await loadData();
@@ -1435,6 +1653,51 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
             ["Citation cutoff", COMPLETE_CITATION_YEAR],
           ]);
           console.error(error);
+        }
+      }
+
+      function initOnboarding() {
+        const SEEN_KEY = "dra.seenWelcome";
+        const HINT_KEY = "dra.dismissedDockHint";
+        const safeGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+        const safeSet = (k, v) => { try { localStorage.setItem(k, v); } catch { /* ignore */ } };
+
+        const openWelcome = () => {
+          if (!els.welcomeDialog.open) els.welcomeDialog.showModal();
+        };
+        const closeWelcome = () => {
+          if (els.welcomeDialog.open) els.welcomeDialog.close();
+          safeSet(SEEN_KEY, "1");
+        };
+
+        els.showAroundBtn.addEventListener("click", openWelcome);
+        els.closeWelcome.addEventListener("click", closeWelcome);
+        els.welcomeStart.addEventListener("click", closeWelcome);
+        els.welcomeDialog.addEventListener("close", () => safeSet(SEEN_KEY, "1"));
+
+        els.welcomeFormulaLink.addEventListener("click", () => {
+          closeWelcome();
+          const note = document.querySelector(".formula-note");
+          if (note) {
+            note.open = true;
+            note.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        });
+
+        if (safeGet(HINT_KEY) !== "1") {
+          els.dockHint.hidden = false;
+        }
+        const dismissHint = () => {
+          if (els.dockHint.hidden) return;
+          els.dockHint.hidden = true;
+          safeSet(HINT_KEY, "1");
+        };
+        els.dockHintDismiss.addEventListener("click", dismissHint);
+        const dock = document.querySelector(".control-dock");
+        dock.addEventListener("change", dismissHint, { once: true });
+
+        if (safeGet(SEEN_KEY) !== "1") {
+          openWelcome();
         }
       }
 
@@ -1478,6 +1741,55 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
             els.criteriaToggle.setAttribute("aria-expanded", "true");
           }
         });
+
+        document.querySelectorAll("#presets .preset-chip").forEach((chip) => {
+          chip.addEventListener("click", () => applyPreset(chip.dataset.preset));
+        });
+        const clearPresetActive = () => {
+          document.querySelectorAll("#presets .preset-chip.active").forEach((c) => c.classList.remove("active"));
+        };
+        document.querySelector(".control-dock").addEventListener("change", clearPresetActive);
+        document.querySelector(".control-dock").addEventListener("input", clearPresetActive);
+      }
+
+      const PRESETS = {
+        "sleepers-physics": {
+          mode: "sleepers",
+          field: "Physics and Astronomy",
+          minDelay: 5,
+        },
+        "recent-cs": {
+          mode: "recent",
+          field: "Computer Science",
+        },
+        "impact-bio": {
+          mode: "impact",
+          field: "Biochemistry, Genetics and Molecular Biology",
+        },
+        "contrast-all": {
+          mode: "contrast",
+          field: "",
+        },
+      };
+
+      function applyPreset(key) {
+        const preset = PRESETS[key];
+        if (!preset) return;
+        els.mode.value = preset.mode;
+        els.field.value = preset.field ?? "";
+        configureYearWindow(publicationDomain);
+        els.minDelay.value = String(preset.minDelay ?? 0);
+        els.peakAge.value = String(preset.peakAge ?? 0);
+        els.spotlight.value = String(preset.spotlight ?? 28);
+        els.search.value = "";
+        delayRange = null;
+        topicFilter = "";
+        venueFilter = "";
+        pinnedPaper = null;
+        document.querySelectorAll("#presets .preset-chip").forEach((c) => {
+          c.classList.toggle("active", c.dataset.preset === key);
+        });
+        renderAll();
       }
 
       function renderCriteria(mode) {
