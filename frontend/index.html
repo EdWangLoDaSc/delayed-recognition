@@ -1815,7 +1815,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
 
       async function loadData() {
         try {
-          const response = await fetch("../data/papers.json");
+          const response = await fetch("../data/papers.json?v=97f39d7", { cache: "reload" });
           const raw = await response.json();
           if (!Array.isArray(raw)) throw new Error("papers.json did not parse as an array");
           const normalized = normalizeCorpus(raw);
