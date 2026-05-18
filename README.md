@@ -126,16 +126,13 @@ strategy, B-coefficient formula, and output schema.
 ## Stack
 
 - **Data pipeline:** Python 3 · `requests` · OpenAlex REST API
-- **Frontend:** vanilla HTML + ES modules + D3 v7 (vendored locally). No build step.
+- **Frontend:** vanilla HTML + ES modules + D3 v7 (via CDN). No build step.
 - **Typography:** Fraunces (display), EB Garamond (body), JetBrains Mono
   (data), loaded from Google Fonts.
-- **Integration:** reactive filter dock, linked D3 views, first-visit guided
-  tutorial, and static deployment config. The D3 modules are framework-free and
-  can still be wrapped by Svelte components if a build step is added later; see
+- **Planned** (Member 3): port components into a Svelte shell for the
+  deployed final version. The D3 modules are framework-free and take a
+  plain DOM element + data, so the port is a thin wrapper — see
   [`frontend/README.md`](frontend/README.md).
-- **Deployment:** Vercel can serve the repo as a static site with the included
-  [`vercel.json`](vercel.json). Detailed steps and browser checks are in
-  [`frontend/DEPLOYMENT.md`](frontend/DEPLOYMENT.md).
 
 ---
 
