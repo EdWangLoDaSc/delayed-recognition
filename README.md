@@ -20,6 +20,8 @@ it in under a minute — no `npm install`, no toolchain.
 ```bash
 git clone https://github.com/EdWangLoDaSc/delayed-recognition.git
 cd delayed-recognition
+git lfs install
+git lfs pull
 python3 -m http.server 8000
 ```
 
