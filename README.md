@@ -1,5 +1,7 @@
 # Delayed Recognition in Academic Literature
 
+**<https://delayedrecognition.vercel.app>**
+
 An interactive atlas of **sleeping beauties** — scientific papers that lie
 dormant after publication, then suddenly attract a surge of citations. Built
 on top of ~51,000 papers drawn from the [OpenAlex](https://openalex.org) API
