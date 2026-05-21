@@ -1,1 +1,2 @@
 # Commit data JSON directly so static hosts like Vercel can read it without Git LFS.
+data/papers.json -filter -diff -merge
