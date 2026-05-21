@@ -10,7 +10,7 @@ export const QUESTION_MODES = [
   {
     key: "sleepers",
     label: "Long-sleep awakenings",
-    question: "Which papers stayed quiet longest before a citation peak?",
+    question: "Which papers stayed quiet longest before a peak?",
     copy:
       "Uses Beauty score B to surface dormant papers whose citation peak arrives late and intensely.",
     criteria: {
@@ -57,14 +57,14 @@ export const QUESTION_MODES = [
   },
   {
     key: "contrast",
-    label: "Early attention contrast",
-    question: "Which papers look least like delayed-recognition cases?",
+    label: "Early-attention baseline",
+    question: "Which highly cited papers are least delayed?",
     copy:
-      "Ranks toward early or steady attention so the dormant-before-peak pattern has a visible comparison group.",
+      "A control view for comparison: it intentionally surfaces high-impact papers with early or steady attention, not sleeping-beauty candidates.",
     criteria: {
-      include: "all papers (no filter)",
-      rank: "log10(lifetime citations) - delay - 0.08 x sleep duration",
-      note: "Reverse view: surfaces early or steady-attention papers as a comparison group.",
+      include: "all papers (no minimum B)",
+      rank: "log10(lifetime citations) - Beauty B - 0.08 x sleep duration",
+      note: "Baseline view: low-B papers are expected here because this is the contrast group.",
     },
     predicate: () => true,
     score: (paper) =>

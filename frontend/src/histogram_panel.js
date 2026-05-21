@@ -15,6 +15,12 @@ const PALETTE = {
   selection: "#2d6b55",
 };
 
+const FIELD_MARKER_LABELS = new Map([
+  ["Biochemistry, Genetics and Molecular Biology", "MOL BIO"],
+  ["Physics and Astronomy", "PHYSICS"],
+  ["Computer Science", "CS"],
+]);
+
 export function renderHistogramPanel({
   container,
   papers,
@@ -91,6 +97,7 @@ export function renderHistogramPanel({
     let selectedMarker = null;
     if (selectedPaper?.field === field && Number.isFinite(selectedPaper.recognition_delay)) {
       const sx = x(Math.max(xDomain[0], Math.min(xDomain[1], selectedPaper.recognition_delay)));
+      const labelFitsRight = sx < facetW - MARGIN.right - 92;
       selectedMarker = facet.append("g").attr("pointer-events", "none");
       selectedMarker
         .append("line")
@@ -104,13 +111,14 @@ export function renderHistogramPanel({
         .attr("pointer-events", "none");
       selectedMarker
         .append("text")
-        .attr("x", sx + 5)
+        .attr("x", labelFitsRight ? sx + 5 : sx - 5)
         .attr("y", MARGIN.top + 10)
+        .attr("text-anchor", labelFitsRight ? "start" : "end")
         .attr("fill", PALETTE.selection)
         .style("font-family", "'JetBrains Mono', monospace")
         .style("font-size", "9px")
         .style("letter-spacing", "0.1em")
-        .text("SELECTED");
+        .text(`SELECTED · ${FIELD_MARKER_LABELS.get(field) || "FIELD"}`);
     }
 
     facet

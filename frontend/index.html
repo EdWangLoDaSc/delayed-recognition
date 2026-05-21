@@ -317,8 +317,9 @@
       .question-panel h2 {
         margin: 0 0 8px;
         font-family: var(--display);
-        font-size: clamp(23px, 2.8vw, 38px);
+        font-size: clamp(25px, 2.5vw, 40px);
         font-weight: 660;
+        line-height: 1.04;
         letter-spacing: 0;
       }
 
@@ -328,14 +329,26 @@
         max-width: 860px;
       }
 
+      .question-kicker {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .question-kicker .eyebrow {
+        margin: 0;
+      }
+
       .question-title-row {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         margin-bottom: 8px;
       }
 
       .question-title-row h2 {
+        min-width: 0;
         margin: 0;
       }
 
@@ -441,8 +454,8 @@
         min-width: 0;
       }
 
-      .trajectory-panel { order: 1; }
-      .distribution-panel { order: 2; }
+      .distribution-panel { order: 1; }
+      .trajectory-panel { order: 2; }
       .table-panel { order: 3; }
 
       .side-stack {
@@ -494,21 +507,25 @@
         border-radius: 4px;
       }
       .formula-note > summary {
+        display: flex;
+        align-items: center;
+        gap: 9px;
         cursor: pointer;
-        padding: 6px 10px;
+        padding: 8px 12px;
         font-weight: 600;
         color: var(--ink);
         list-style: none;
       }
       .formula-note > summary::-webkit-details-marker { display: none; }
       .formula-note > summary::before {
-        content: "▸ ";
+        content: "▸";
+        flex: 0 0 auto;
         display: inline-block;
         transition: transform 0.15s;
       }
-      .formula-note[open] > summary::before { content: "▾ "; }
+      .formula-note[open] > summary::before { content: "▾"; }
       .formula-note .body {
-        padding: 0 12px 10px;
+        padding: 2px 14px 12px;
         line-height: 1.5;
       }
       .formula-note .formula {
@@ -524,31 +541,47 @@
       .formula-note ul { margin: 6px 0 6px 18px; padding: 0; }
       .formula-note li { margin: 2px 0; }
 
-      .step-badge {
+      .section-marker {
         display: inline-grid;
         place-items: center;
-        width: 22px;
-        height: 22px;
-        margin-right: 10px;
+        flex: 0 0 24px;
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        margin: 0;
         border-radius: 50%;
         background: var(--warm);
         color: #fff;
         font-family: var(--display);
         font-size: 13px;
-        font-weight: 650;
+        font-weight: 700;
         line-height: 1;
-        vertical-align: 0.05em;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
       }
 
-      .control-dock .step-badge {
-        margin-right: 8px;
+      .control > span:has(.section-marker) {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
-      .question-title-row .step-badge {
-        margin-right: 0;
-        flex: 0 0 auto;
+
+      .control > span .section-marker {
+        color: #fff;
+        font-family: var(--display);
+        font-size: 13px;
+        line-height: 1;
+        letter-spacing: 0;
+        text-transform: none;
       }
-      .panel-head .step-badge {
-        margin-right: 10px;
+
+      .question-kicker .section-marker {
+        transform: translateY(-1px);
+      }
+
+      .panel-head h3 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
       .dock-hint {
@@ -611,6 +644,7 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 12px;
+        align-items: center;
         padding: 12px 14px;
         background: var(--surface);
       }
@@ -622,9 +656,13 @@
       }
 
       .field-row button {
-        min-height: 30px;
-        padding: 0 8px;
+        justify-self: end;
+        align-self: center;
+        min-width: 66px;
+        min-height: 34px;
+        padding: 0 12px;
         font-size: 12px;
+        line-height: 1;
       }
 
       .field-name {
@@ -936,9 +974,13 @@
 
       .topic-row button,
       .venue-row button {
-        min-height: 30px;
-        padding: 0 8px;
+        justify-self: end;
+        align-self: center;
+        min-width: 54px;
+        min-height: 32px;
+        padding: 0 11px;
         font-size: 12px;
+        line-height: 1;
       }
 
       .topic-name,
@@ -1006,20 +1048,21 @@
       }
 
       .rank-table {
-        width: 100%;
-        min-width: 760px;
+        width: max(100%, 860px);
+        min-width: 860px;
         border-collapse: collapse;
         table-layout: fixed;
         font-size: 13px;
       }
 
       #rankTable {
+        margin-top: 14px;
         overflow-x: auto;
       }
 
       .rank-table th,
       .rank-table td {
-        padding: 10px 9px;
+        padding: 14px 14px;
         border-top: 1px solid var(--rule);
         text-align: left;
         vertical-align: top;
@@ -1032,6 +1075,14 @@
         text-transform: uppercase;
         color: var(--muted);
         background: var(--surface-soft);
+        vertical-align: middle;
+      }
+
+      .rank-table th.rank-col,
+      .rank-table td.rank-cell {
+        text-align: center;
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
       .rank-table tbody tr {
@@ -1053,6 +1104,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        line-height: 1.35;
       }
 
       .rank-table .title-cell b {
@@ -1064,8 +1116,22 @@
 
       .rank-table .num-cell {
         font-family: var(--mono);
-        text-align: right;
+        font-variant-numeric: tabular-nums;
         font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .rank-table th.metric-cell,
+      .rank-table td.metric-cell {
+        text-align: center;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .rank-table th.cites-cell,
+      .rank-table td.cites-cell {
+        text-align: right;
+        padding-right: 22px;
       }
 
       .chart-pad svg text { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-soft); }
@@ -1444,7 +1510,7 @@
           <button type="button" id="dockHintDismiss" aria-label="Dismiss hint">Got it</button>
         </div>
         <label class="control">
-          <span><span class="step-badge" aria-hidden="true">1</span>Analytical question</span>
+          <span><span class="section-marker" aria-label="Section 1">1</span>Analytical question</span>
           <select id="mode"></select>
         </label>
         <label class="control">
@@ -1476,9 +1542,11 @@
 
       <section class="question-panel" aria-live="polite">
         <div>
-          <p class="eyebrow">Current question</p>
+          <div class="question-kicker">
+            <span class="section-marker" aria-label="Section 2">2</span>
+            <p class="eyebrow">Current question</p>
+          </div>
           <div class="question-title-row">
-            <span class="step-badge" aria-hidden="true">2</span>
             <h2 id="questionTitle">-</h2>
             <button
               type="button"
@@ -1494,10 +1562,10 @@
           <div id="selectionCue" class="selection-cue" hidden></div>
           <div class="presets" id="presets">
             <span class="presets-label">Try this</span>
-            <button type="button" class="preset-chip" data-preset="sleepers-physics">Famous sleepers in physics</button>
+            <button type="button" class="preset-chip" data-preset="sleepers-physics">High-B physics classics</button>
             <button type="button" class="preset-chip" data-preset="recent-cs">Recent CS awakenings</button>
-            <button type="button" class="preset-chip" data-preset="impact-bio">High-impact molecular biology</button>
-            <button type="button" class="preset-chip" data-preset="contrast-all">Cross-field contrast</button>
+            <button type="button" class="preset-chip" data-preset="impact-bio">Delayed bio methods</button>
+            <button type="button" class="preset-chip" data-preset="contrast-all">Early-attention baseline</button>
           </div>
           <div class="active-filters" id="activeFilters"></div>
         </div>
@@ -1517,7 +1585,7 @@
         <div class="main-stack">
           <section class="panel distribution-panel">
             <div class="panel-head">
-              <h3><span class="step-badge" aria-hidden="true">3</span>Beauty Score Distribution</h3>
+              <h3><span class="section-marker" aria-label="Section 3">3</span>Beauty Score Distribution</h3>
             </div>
             <p class="panel-copy">
               Bar height is paper count. Click a bar to filter Beauty score B
@@ -1553,7 +1621,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
 
           <section class="panel trajectory-panel">
             <div class="panel-head">
-              <h3><span class="step-badge" aria-hidden="true">4</span>Trajectories in Time</h3>
+              <h3><span class="section-marker" aria-label="Section 4">4</span>Trajectories in Time</h3>
               <span class="aside">Context plus spotlight</span>
             </div>
             <p class="panel-copy" id="brushSummary">
@@ -1564,7 +1632,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
 
           <section class="panel table-panel">
             <div class="panel-head">
-              <h3><span class="step-badge" aria-hidden="true">5</span>Ranked Papers</h3>
+              <h3><span class="section-marker" aria-label="Section 5">5</span>Ranked Papers</h3>
             </div>
             <p class="panel-copy" id="rankContext">
               The table uses the active analytical question and the same filters as the charts.
@@ -2153,19 +2221,29 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
         "sleepers-physics": {
           mode: "sleepers",
           field: "Physics and Astronomy",
-          minDelay: 5,
+          minDelay: 18,
+          peakAge: 20,
+          spotlight: 30,
         },
         "recent-cs": {
           mode: "recent",
           field: "Computer Science",
+          minDelay: 18,
+          peakAge: 24,
+          spotlight: 34,
         },
         "impact-bio": {
           mode: "impact",
           field: "Biochemistry, Genetics and Molecular Biology",
+          minDelay: 14,
+          peakAge: 18,
+          spotlight: 30,
         },
         "contrast-all": {
           mode: "contrast",
           field: "",
+          yearRange: [2007, 2010],
+          spotlight: 24,
         },
       };
 
@@ -2175,13 +2253,18 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
         els.mode.value = preset.mode;
         els.field.value = preset.field ?? "";
         configureYearWindow(publicationDomain);
+        if (preset.yearRange) {
+          els.yearStart.value = String(preset.yearRange[0]);
+          els.yearEnd.value = String(preset.yearRange[1]);
+          syncYearWindow();
+        }
         els.minDelay.value = String(preset.minDelay ?? 0);
         els.peakAge.value = String(preset.peakAge ?? 0);
         els.spotlight.value = String(preset.spotlight ?? 28);
         els.search.value = "";
         delayRange = null;
-        topicFilter = "";
-        venueFilter = "";
+        topicFilter = preset.topic ?? "";
+        venueFilter = preset.venue ?? "";
         pinnedPaper = null;
         document.querySelectorAll("#presets .preset-chip").forEach((c) => {
           c.classList.toggle("active", c.dataset.preset === key);
@@ -2495,14 +2578,22 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
         }
         els.rankTable.innerHTML = `
           <table class="rank-table">
+            <colgroup>
+              <col style="width:64px">
+              <col>
+              <col style="width:220px">
+              <col style="width:84px">
+              <col style="width:96px">
+              <col style="width:118px">
+            </colgroup>
             <thead>
               <tr>
-                <th style="width:52px">Rank</th>
+                <th class="rank-col">Rank</th>
                 <th>Paper</th>
-                <th style="width:150px">Field</th>
-                <th style="width:76px" class="num-cell">B</th>
-                <th style="width:86px" class="num-cell">Peak age</th>
-                <th style="width:88px" class="num-cell">Peak cites</th>
+                <th>Field</th>
+                <th class="num-cell metric-cell">B</th>
+                <th class="num-cell metric-cell">Peak age</th>
+                <th class="num-cell cites-cell">Peak cites</th>
               </tr>
             </thead>
             <tbody>
@@ -2510,12 +2601,12 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
                 .map(
                   (paper, index) => `
                     <tr tabindex="0" data-id="${escapeHtml(paper.id)}" class="${pinnedPaper?.id === paper.id ? "selected" : ""}" aria-selected="${String(pinnedPaper?.id === paper.id)}">
-                      <td class="num-cell">${rankById.get(paper.id) || index + 1}</td>
+                      <td class="num-cell rank-cell">${rankById.get(paper.id) || index + 1}</td>
                       <td class="title-cell"><b>${escapeHtml(paper.title || "Untitled")}</b><br><span class="micro">${escapeHtml(paper.first_author || "Unknown")} · ${paper.publication_year} · ${escapeHtml(venueLabel(paper))}</span></td>
                       <td>${escapeHtml(paper.field_label)}</td>
-                      <td class="num-cell">${formatNumber(paper.recognition_delay, 1)}</td>
-                      <td class="num-cell">${paper.peak_age}y</td>
-                      <td class="num-cell">${formatNumber(paper.peak_citations)}</td>
+                      <td class="num-cell metric-cell">${formatNumber(paper.recognition_delay, 1)}</td>
+                      <td class="num-cell metric-cell">${paper.peak_age}y</td>
+                      <td class="num-cell cites-cell">${formatNumber(paper.peak_citations)}</td>
                     </tr>
                   `
                 )
@@ -2596,7 +2687,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
         const fieldContext = selectedFieldContext();
         const rank = selectedInSubset ? rankPosition(pinnedPaper, subset, mode.key) : null;
         const scopeCopy = selectedInSubset
-          ? `Marked in the trajectory, distribution, table, and selected summary.`
+          ? `Marked in the trajectory, table, selected summary, and the ${shortField(pinnedPaper.field)} distribution facet.`
           : `Pinned outside the active filters; this summary stays available while the charts show the current comparison.`;
         const rankCopy = rank ? `#${formatNumber(rank)} of ${formatNumber(subset.length)}` : "outside table";
         const doi = safeDoi(pinnedPaper.doi);
