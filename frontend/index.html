@@ -2393,6 +2393,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
           ["Corpus", formatNumber(summary.total)],
         ]);
 
+        const histogramSet = filterPapers(papers, { ...currentFilters(), delayRange: null });
         const fieldLensSet = filterPapers(papers, { ...currentFilters(), field: "" });
         const topicLensSet = filterPapers(papers, { ...currentFilters(), topic: "", delayRange: null });
         const venueLensSet = filterPapers(papers, { ...currentFilters(), venue: "", delayRange: null });
@@ -2403,7 +2404,7 @@ where  ℓ(t) = c(0) + (c(t_peak) − c(0)) · t / t_peak
         renderRankTable(subset, mode);
         renderHistogramPanel({
           container: els.histogram,
-          papers: subset,
+          papers: histogramSet,
           activeRange: delayRange,
           selectedPaper: selectedInSubset ? pinnedPaper : null,
           onBinClick: (x0, x1) => {

@@ -135,7 +135,7 @@ export function renderHistogramPanel({
       .attr("fill", (bin) => color((bin.x0 + bin.x1) / 2))
       .attr("fill-opacity", (bin) => {
         const base = 0.42 + ((bin.x0 + bin.x1) / 2 / clip) * 0.5;
-        return activeRange && !inRange(bin, activeRange) ? base * 0.25 : base;
+        return activeRange && !inRange(bin, activeRange) ? Math.max(0.34, base * 0.62) : base;
       })
       .attr("stroke", (bin) => (activeRange && inRange(bin, activeRange) ? PALETTE.selection : "none"))
       .attr("stroke-width", 1.2)
@@ -157,7 +157,7 @@ export function renderHistogramPanel({
         const base = 0.34 + ((bin.x0 + bin.x1) / 2 / clip) * 0.56;
         d3.select(this).attr(
           "fill-opacity",
-          activeRange && !inRange(bin, activeRange) ? base * 0.25 : base
+          activeRange && !inRange(bin, activeRange) ? Math.max(0.34, base * 0.62) : base
         );
       })
       .on("click", (event, bin) => {
