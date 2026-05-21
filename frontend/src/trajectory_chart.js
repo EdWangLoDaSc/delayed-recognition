@@ -1,7 +1,7 @@
 // Citation trajectory chart: field/year-window context plus an interactive
 // spotlight set ranked by the current analytical question.
 
-const MARGIN = { top: 62, right: 182, bottom: 54, left: 66 };
+const MARGIN = { top: 62, right: 248, bottom: 54, left: 66 };
 
 const PALETTE = {
   paper: "#f7f5f0",
@@ -14,6 +14,7 @@ const PALETTE = {
   warmSoft: "#d9794a",
   cool: "#25606d",
   selection: "#2d6b55",
+  labelSelect: "#8f321b",
 };
 
 export function renderTrajectoryChart({
@@ -75,9 +76,6 @@ export function renderTrajectoryChart({
     paper,
     pts: toTrajectory(paper).filter((point) => point.t <= tMax),
   }));
-  const labelIds = new Set(spotlightPapers.slice(0, Math.min(7, spotlightPapers.length)).map((paper) => paper.id));
-  if (selectedId) labelIds.add(selectedId);
-
   const maxCitations =
     d3.max([
       ...context.map((point) => point.q90),
@@ -207,6 +205,13 @@ export function renderTrajectoryChart({
     .curve(d3.curveMonotoneX);
 
   spotlightTraj.sort((a, b) => a.paper.recognition_delay - b.paper.recognition_delay);
+  const labelLaneCount = spotlightTraj.length > 14 ? 2 : 1;
+  const labelLaneById = labelLaneMap(
+    spotlightTraj,
+    (series) => y(Math.max(1, series.paper.peak_citations)),
+    labelLaneCount
+  );
+  const labelX = (series) => width - MARGIN.right + 14 + (labelLaneById.get(series.paper.id) || 0) * 86;
 
   const groups = spotlightG
     .selectAll("g.spot")
@@ -269,22 +274,41 @@ export function renderTrajectoryChart({
     .attr("stroke-width", 1.4);
 
   groups
-    .filter((series) => labelIds.has(series.paper.id))
+    .append("line")
+    .attr("class", "label-connector")
+    .attr("x1", (series) => x(series.paper.peak_age) + 5)
+    .attr("x2", (series) => labelX(series) - 6)
+    .attr("y1", (series) => y(Math.max(1, series.paper.peak_citations)))
+    .attr("y2", (series) => y(Math.max(1, series.paper.peak_citations)))
+    .attr("stroke", (series) => color(series.paper.recognition_delay))
+    .attr("stroke-width", 0.65)
+    .attr("stroke-opacity", 0.34)
+    .attr("pointer-events", "none");
+
+  groups
     .append("text")
     .attr("class", "end-label")
-    .attr("x", width - MARGIN.right + 14)
+    .attr("x", (series) => labelX(series))
     .attr("y", (series) => y(Math.max(1, series.paper.peak_citations)) + 3)
     .attr("fill", (series) => color(series.paper.recognition_delay))
     .style("font-family", "'Fraunces', Georgia, serif")
     .style("font-style", "italic")
-    .style("font-size", "11px")
+    .style("font-size", "9.8px")
     .style("font-weight", "500")
-    .text((series) => {
-      const author = (series.paper.first_author || "?").split(" ").slice(-1)[0];
-      return `${author} '${String(series.paper.publication_year).slice(2)}`;
-    });
+    .text((series) => `${authorLabel(series.paper)} '${String(series.paper.publication_year).slice(2)}`);
 
-  dodgeLabels(groups.selectAll(".end-label").nodes(), 16, MARGIN.top + 4, height - MARGIN.bottom - 5);
+  for (let lane = 0; lane < labelLaneCount; lane++) {
+    dodgeLabels(
+      groups
+        .selectAll(".end-label")
+        .filter((series) => labelLaneById.get(series.paper.id) === lane)
+        .nodes(),
+      12,
+      MARGIN.top + 4,
+      height - MARGIN.bottom - 5
+    );
+  }
+  updateLabelConnectors(groups);
 
   let currentSelection = selectedId;
   applySelection(currentSelection);
@@ -296,6 +320,16 @@ export function renderTrajectoryChart({
         .attr("stroke-opacity", 1)
         .attr("stroke-width", widthFor(series.paper.recognition_delay) + 0.9);
       d3.select(this).select(".peak").attr("r", 5);
+      d3.select(this)
+        .select(".end-label")
+        .attr("fill", PALETTE.labelSelect)
+        .attr("fill-opacity", 1)
+        .style("font-weight", "780");
+      d3.select(this)
+        .select(".label-connector")
+        .attr("stroke", PALETTE.labelSelect)
+        .attr("stroke-opacity", 0.78)
+        .attr("stroke-width", 1.2);
       onHover(series.paper);
     })
     .on("mouseleave blur", function (event, series) {
@@ -305,6 +339,16 @@ export function renderTrajectoryChart({
           .attr("stroke-opacity", currentSelection ? 0.25 : 0.86)
           .attr("stroke-width", widthFor(series.paper.recognition_delay));
         d3.select(this).select(".peak").attr("r", 3.5);
+        d3.select(this)
+          .select(".end-label")
+          .attr("fill", color(series.paper.recognition_delay))
+          .attr("fill-opacity", currentSelection ? 0.34 : 0.92)
+          .style("font-weight", "500");
+        d3.select(this)
+          .select(".label-connector")
+          .attr("stroke", color(series.paper.recognition_delay))
+          .attr("stroke-opacity", currentSelection ? 0.16 : 0.34)
+          .attr("stroke-width", 0.65);
       }
       onHover(null);
     })
@@ -449,7 +493,20 @@ export function renderTrajectoryChart({
           : widthFor(series.paper.recognition_delay)
       );
     groups.select(".peak").attr("r", (series) => (series.paper.id === id ? 5.2 : 3.5));
-    groups.select(".end-label").attr("font-weight", (series) => (series.paper.id === id ? 700 : 500));
+    groups
+      .select(".end-label")
+      .attr("fill", (series) =>
+        series.paper.id === id ? PALETTE.labelSelect : color(series.paper.recognition_delay)
+      )
+      .attr("fill-opacity", (series) => (id && series.paper.id !== id ? 0.34 : 0.94))
+      .style("font-weight", (series) => (series.paper.id === id ? "780" : "500"));
+    groups
+      .select(".label-connector")
+      .attr("stroke", (series) =>
+        series.paper.id === id ? PALETTE.labelSelect : color(series.paper.recognition_delay)
+      )
+      .attr("stroke-opacity", (series) => (series.paper.id === id ? 0.78 : id ? 0.16 : 0.34))
+      .attr("stroke-width", (series) => (series.paper.id === id ? 1.2 : 0.65));
   }
 }
 
@@ -480,6 +537,21 @@ function paperLabel(paper) {
   return `${paper.title || "Untitled"}; ${paper.first_author || "unknown author"}; recognition delay ${paper.recognition_delay.toFixed(1)}; peak ${paper.peak_year}`;
 }
 
+function authorLabel(paper) {
+  const author = String(paper.first_author || "").trim();
+  if (!author || author.toLowerCase() === "unknown") return "--";
+  return author.split(/\s+/).slice(-1)[0] || "--";
+}
+
+function labelLaneMap(seriesList, yAccessor, laneCount) {
+  if (laneCount <= 1) return new Map(seriesList.map((series) => [series.paper.id, 0]));
+  return new Map(
+    [...seriesList]
+      .sort((a, b) => yAccessor(a) - yAccessor(b))
+      .map((series, index) => [series.paper.id, index % laneCount])
+  );
+}
+
 function dodgeLabels(nodes, minGap, minY, maxY) {
   const items = nodes.map((node) => ({ node, y: +node.getAttribute("y") })).sort((a, b) => a.y - b.y);
   if (!items.length) return;
@@ -502,4 +574,16 @@ function dodgeLabels(nodes, minGap, minY, maxY) {
       items[index].node.setAttribute("y", items[index].y);
     }
   }
+}
+
+function updateLabelConnectors(groups) {
+  groups.each(function () {
+    const group = window.d3.select(this);
+    const label = group.select(".end-label");
+    if (label.empty()) return;
+    group
+      .select(".label-connector")
+      .attr("x2", Number(label.attr("x")) - 6)
+      .attr("y2", Number(label.attr("y")) - 4);
+  });
 }
