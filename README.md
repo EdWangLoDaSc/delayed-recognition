@@ -22,15 +22,14 @@ it in under a minute — no `npm install`, no toolchain.
 ```bash
 git clone https://github.com/EdWangLoDaSc/delayed-recognition.git
 cd delayed-recognition
-git lfs install
-git lfs pull
 python3 -m http.server 8000
 ```
 
 Then open **<http://localhost:8000/frontend/index.html>** in a browser.
 
-The page fetches `data/papers.json` (≈34 MB, tracked with Git LFS) directly.
-First load takes a few seconds; after that everything is interactive.
+The page fetches `data/papers.json` (≈34 MB, committed directly — not Git LFS)
+straight from the repo. First load takes a few seconds; after that everything
+is interactive.
 
 > **Why not just open `index.html` in Finder?** Because the page loads JS
 > modules and JSON via `fetch`, browsers block `file://` requests. The
@@ -52,7 +51,7 @@ First load takes a few seconds; after that everything is interactive.
 ```
 .
 ├── data/
-│   └── papers.json            ← 51k papers with B coefficients (committed, ~34 MB)
+│   └── papers.json            ← 51k papers with B coefficients (committed directly, ~34 MB — not LFS)
 ├── data_pipeline/
 │   ├── fetch_openalex.py      ← Python script to fetch + compute B
 │   ├── README.md              ← Pipeline documentation
