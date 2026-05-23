@@ -1,7 +1,6 @@
 # Frontend — Delayed Recognition
 
-Buildless D3 dashboard deliverables, packaged as ES modules so they can be
-ported into a Svelte shell later without a toolchain fight.
+Buildless D3 dashboard deliverables, packaged as framework-free ES modules.
 
 ## Run the demo
 
@@ -44,18 +43,7 @@ Pure helpers for the dashboard data contract:
 - computes Beauty score B through the last complete citation year
 - defines question-led modes, method cards, filters, search, and field summaries
 
-## Porting into Svelte
+## Integration notes
 
 Each component takes a plain DOM element and pure data; nothing reaches into
-globals beyond `window.d3`. In a Svelte component:
-
-```svelte
-<script>
-  import { onMount } from "svelte";
-  import { renderTrajectoryChart } from "$lib/trajectory_chart.js";
-  export let papers;
-  let container;
-  onMount(() => renderTrajectoryChart({ container, papers }));
-</script>
-<div bind:this={container}></div>
-```
+globals beyond `window.d3`.
