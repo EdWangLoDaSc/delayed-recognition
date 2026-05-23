@@ -27,7 +27,7 @@ python3 -m http.server 8000
 
 Then open **<http://localhost:8000/frontend/index.html>** in a browser.
 
-The page fetches `data/papers.json` (≈34 MB, committed directly — not Git LFS)
+The page fetches `data/papers.json` (≈34 MB, committed directly)
 straight from the repo. First load takes a few seconds; after that everything
 is interactive.
 
@@ -51,7 +51,7 @@ is interactive.
 ```
 .
 ├── data/
-│   └── papers.json            ← 51k papers with B coefficients (committed directly, ~34 MB — not LFS)
+│   └── papers.json            ← 51k papers with B coefficients (committed directly, ~34 MB)
 ├── data_pipeline/
 │   ├── fetch_openalex.py      ← Python script to fetch + compute B
 │   ├── README.md              ← Pipeline documentation
@@ -62,8 +62,10 @@ is interactive.
 │   │   ├── analysis.js          ← Question modes, Beauty score summaries
 │   │   ├── trajectory_chart.js  ← D3 context-and-spotlight trajectory chart
 │   │   └── histogram_panel.js   ← D3 small-multiples histogram of delay score
+│   ├── vendor/                ← Vendored frontend dependencies
 │   └── README.md              ← Component API documentation
-├── proposal_2page_final (1).pdf
+├── index.html                 ← Redirect to frontend/index.html
+├── vercel.json                ← Static deployment routing
 └── README.md                  ← (this file)
 ```
 
@@ -132,21 +134,6 @@ strategy, B-coefficient formula, and output schema.
 - **Frontend:** vanilla HTML + ES modules + D3 v7 (via CDN). No build step.
 - **Typography:** Fraunces (display), EB Garamond (body), JetBrains Mono
   (data), loaded from Google Fonts.
-- **Planned** (Member 3): port components into a Svelte shell for the
-  deployed final version. The D3 modules are framework-free and take a
-  plain DOM element + data, so the port is a thin wrapper — see
-  [`frontend/README.md`](frontend/README.md).
-
----
-
-## Team roles
-
-| Member | Responsibilities |
-|---|---|
-| **1** — Data & Backend / Viz | OpenAlex pipeline; Beauty Coefficient implementation; both D3 components; demo page |
-| **2** — Visualization & D3 | Design review; integrate components into Svelte tree; Tool Design section |
-| **3** — Frontend, Integration & Writing | Svelte application shell; reactive filter sidebar; deploy; Introduction |
-| **4** — Analysis & Evaluation | Cross-field comparative analysis; usability evaluation; Findings & Discussion |
 
 ---
 
